@@ -1,0 +1,62 @@
+<div class="page-header">
+  <div class="page-title">
+    <h4>Role privilege</h4>
+    <h6>Add/Role privilege</h6>
+  </div>
+</div>
+
+<div class="row">
+  <div class="card">
+    <div class="card-header">
+      <h5 class="subTitle">User privilege Add</h5>
+    </div>
+    <div class="card-body">
+      <form>
+        <div class="row">
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="form-group">
+              <label class="required">Choose User Role</label>
+              <mat-select class="select" placeholder="Select" (selectionChange)="setRoleSingleValue($event.value)">
+                <mat-option *ngFor="let data of userRoles" [value]="data.value">
+                  {{ data.title}}
+                </mat-option>
+              </mat-select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="table-responsive">
+            <label style="color: #c92d2d; font-size: 15px;"
+                   *ngIf="emptyUserPrivileges">Selected Role Have No Privileges Yet</label>
+            <table class="table mb-0">
+              <thead>
+              <tr>
+                <th>#</th>
+                <th>privilege</th>
+                <th>Action</th>
+              </tr>
+              </thead>
+              <tbody>
+
+              <tr *ngFor="let data of privilegeList; let x=index">
+                <td>{{x+1}}</td>
+                <td>{{data.privilegeName}}</td>
+                <td>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" [checked]="isPrivilegeChecked(data.privilegeId)" (change)="togglePrivilegeCheckbox($event, data)">
+                  </div>
+                </td>
+              </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-lg-12 col-sm-12 col-12 mt-4">
+          <button type="submit" class="btn btn-submit me-2" *ngIf="showSubmitButton" (click)="submitPrivileges()">Submit</button>
+          <button type="button" class="btn btn-clear">Clear</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

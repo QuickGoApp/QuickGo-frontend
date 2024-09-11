@@ -1,0 +1,106 @@
+.vehicle-types {
+  display: flex;
+  gap: 15px;
+}
+
+.vehicle-btn {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  transition: border-color 0.3s, background-color 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.vehicle-btn:hover {
+  border-color: #06325d;
+}
+
+.vehicle-image {
+  width: 50px;
+  height: 50px;
+}
+
+.vehicle-name {
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+/* Yellow border and background for selected vehicle */
+.btn-selected {
+  border-color: #06325d;
+  background-color: #fedf43;
+}
+
+/* Default style for unselected vehicles */
+.vehicle-btn:not(.btn-selected) {
+  border-color: transparent;
+}
+
+
+
+
+//===========rider ==============
+
+
+.rider-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.heart-btn {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.heart-btn .text-danger {
+  color: #ffbb0d;
+}
+
+.heart-btn .text-muted {
+  color: grey;
+}
+
+.vehicle-types {
+  display: flex;
+  gap: 15px;
+}
+
+.vehicle-btn {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.vehicle-btn:hover {
+  border-color: #007bff;
+}
+
+.vehicle-image {
+  width: 50px;
+  height: 50px;
+}
+
+.vehicle-name {
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+/* Yellow border and background for selected vehicle */
+.btn-selected {
+  border-color: yellow;
+  background-color: #fff3cd;
+}
+

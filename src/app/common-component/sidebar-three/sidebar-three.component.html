@@ -1,0 +1,50 @@
+<!-- Sidebar -->
+<div class="container">
+<div class="sidebar sidebar-two" id="sidebar" (mouseover)="miniSideBarMouseHover('over')" (mouseout)="miniSideBarMouseHover('out')">
+  <div class="sidebar-inner slimscroll">
+    <ng-scrollbar>
+      <div id="sidebar-menu" class="sidebar-menu">
+        <ul>
+          <ng-container *ngFor="let mainTittle of side_bar_data">
+            <li class="submenu-open">
+              <h6 class="submenu-hdr">
+                {{ mainTittle.tittle }}
+              </h6>
+              <ng-container *ngFor="let menu of mainTittle?.menu">
+                <ul>
+                  <li routerLinkActive="active"  *ngIf="menu?.hasSubRoute === false">
+                    <a [routerLink]="menu?.route" class="sub-active"><i class="feather" [class]="'icon-' + menu.icon"></i>
+                      <span>{{ menu?.menuValue }}</span>
+                    </a>
+                  </li>
+                  <li routerLinkActive="active" class="submenu" *ngIf="menu.hasSubRoute === true">
+                    <a href="javascript:void(0)" (click)="expandSubMenus(menu)" class="sub-active"
+                      [ngClass]="{ subdrop: menu.showSubRoute === true }">
+                      <i class="feather" [class]="'icon-' + menu.icon"></i>
+                      <span>{{ menu.menuValue }}</span>
+                      <span class="menu-arrow"></span>
+                    </a>
+                    <ul [ngClass]="
+                        menu.showSubRoute === true
+                          ? 'show-sub-menu'
+                          : 'hide-sub-menu'
+                      ">
+                      <ng-container *ngFor="let subMenus of menu.subMenus">
+                        <li>
+                          <a [routerLink]="subMenus.route" >{{ subMenus.menuValue
+                            }}</a>
+                        </li>
+                      </ng-container>
+                    </ul>
+                  </li>
+                </ul>
+              </ng-container>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+    </ng-scrollbar>
+  </div>
+</div>
+</div>
+<!-- /Sidebar -->

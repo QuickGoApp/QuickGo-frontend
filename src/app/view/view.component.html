@@ -1,0 +1,38 @@
+<div
+  [ngClass]="{
+    'expand-menu': miniSidebar === true && expandMenu === true ,
+    'mini-sidebar': miniSidebar === true,
+    'menu-opened': mobileSidebar === true,
+    'slide-nav': mobileSidebar === true
+  }"
+>
+  <!-- Main Wrapper -->
+  <div class="main-wrapper" [ngClass]="{ dark: darkTheme }">
+    <app-header></app-header>
+    <div>
+      <ng-container *ngIf="sideBaractivePath === false">
+        <app-sidebar-one *ngIf="changeLayout === '1'"></app-sidebar-one>
+      </ng-container>
+      <div [class.container]="changeLayout === '4' || changeLayout === '3'">
+        <div
+          class="page-wrapper"
+          [ngClass]="{
+            'page-wrapper-one': changeLayout === '2',
+            'page-wrapper-two': changeLayout === '3',
+            'page-wrapper-three': changeLayout === '4',
+            'page-wrapper-four': changeLayout === '5',
+            'ms-0': sideBaractivePath === true,
+            'content-wrapper' : page === 'pos'
+          }"
+        >
+          <div class="content">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+        <!-- Main Wrapper -->
+      </div>
+    </div>
+    <app-layout></app-layout>
+  </div>
+  <!-- Main Wrapper -->
+</div>

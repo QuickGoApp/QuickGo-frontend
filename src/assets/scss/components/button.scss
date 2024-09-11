@@ -1,0 +1,258 @@
+//.btn-submit {
+//  //min-width: 120px;
+//  background: $__primarycolor;
+//  //width: auto;
+//  //height: 40px;
+//  color: $__white !important;
+//  text-align: center;
+//  //font-size: $__font__size__14;
+//  font-weight: $__bold;
+//  @include margin-padding(null, 14px 10px);
+//  @include transition(all 0.2s ease);
+//
+
+//
+//  @include respond-below(custom991) {
+//    min-width: $__auto;
+//    padding: 5px 7px;
+//  }
+//}
+.btn-submit {
+  min-width: 80px;
+  width: 120px;
+  color: $__white;
+  background-color: $__primarycolor !important;
+  border-color: $__primarycolor !important;
+
+    &:hover {
+      background: $__primarycolorhover;
+      color: $__white;
+    }
+}
+
+.btn-clear {
+  min-width: 80px;
+  width: 120px;
+  background: $__dark__blues;
+  color: $__white !important;
+
+  &:hover {
+    background: $__dark__violets;
+    color: $__white;
+  }
+
+}
+
+.btn-cancel {
+  min-width: 80px;
+  width: 120px;
+  color: $__white;
+  background-color: $__fire__red !important;
+  border-color: $__fire__red !important;
+}
+
+.btn-add {
+  background: $__primarycolor;
+  color: #fff;
+  width: 4em;
+  padding: 3px;
+  margin: 0px;
+  font-weight: 700;
+  @extend %align-items-center;
+  font-size: 8px;
+  /* Add the icon */
+  &::before {
+    content: "\f067"; /* Unicode for the 'fa-plus' icon in Font Awesome */
+    font-family: 'Font Awesome 5 Free'; /* Font family for Font Awesome */
+    color: white; /* Icon color */
+  }
+  @include respond-below(custom991) {
+    padding: 3px 8px;
+  }
+  &:hover{
+    background: $__primarycolorhover;
+    color: $__white;
+  }
+
+}
+
+.btn-delete-table {
+  background: $__fire__red;
+  color: #fff;
+  width: 4em;
+  padding: 3px;
+  margin: 0px;
+  font-weight: 700;
+  @extend %align-items-center;
+  font-size: 8px;
+  img{
+    filter: brightness(0) invert(1);
+  }
+  /* Add an icon */
+  &::before {
+    content: "\f068"; /* Unicode for the 'fa-minus' icon in Font Awesome */
+    font-family: 'Font Awesome 5 Free'; /* Font family for Font Awesome */
+    color: white; /* Icon color */
+  }
+  @include respond-below(custom991) {
+    padding: 3px 8px;
+  }
+  &:hover{
+    background: $__dangerred;
+    color: $__white;
+  }
+
+}
+
+.btn-edit-table {
+  cursor: pointer;
+  background: $__primarycolor;
+  color: #fff;
+  width: 5em;
+  padding: 5px;
+  margin: 0px;
+  font-weight: 700;
+  @extend %align-items-center;
+  font-size: 8px;
+  img{
+    filter: brightness(0) invert(1);
+  }
+  /* Add an icon */
+  &::before {
+    content: "\f044"; /* Unicode for the 'fa-minus' icon in Font Awesome */
+    font-family: 'Font Awesome 5 Free'; /* Font family for Font Awesome */
+    color: white; /* Icon color */
+  }
+  @include respond-below(custom991) {
+    padding: 3px 8px;
+  }
+  &:hover{
+    background: $__primarycolorhover;
+    color: $__white;
+  }
+
+}
+
+.btn-save-table {
+  cursor: pointer;
+  background: $__successcolor;
+  color: #fff;
+  width: 4em;
+  padding: 3px;
+  margin: 0px;
+  font-weight: 700;
+  @extend %align-items-center;
+  font-size: 8px;
+  img{
+    filter: brightness(0) invert(1);
+  }
+  /* Add an icon */
+  &::before {
+    content: "\f067"; /* Unicode for the 'fa-minus' icon in Font Awesome */
+    font-family: 'Font Awesome 5 Free'; /* Font family for Font Awesome */
+    color: white; /* Icon color */
+  }
+  @include respond-below(custom991) {
+    padding: 3px 8px;
+  }
+  &:hover{
+    background: $__success__lights;
+    color: $__white;
+  }
+
+}
+.btn-cancel-table {
+  cursor: pointer;
+  background: $__dangercolor;
+  color: #fff;
+  width: 4em;
+  padding: 3px;
+  margin: 0px;
+  font-weight: 700;
+  @extend %align-items-center;
+  font-size: 8px;
+  img{
+    filter: brightness(0) invert(1);
+  }
+  /* Add an icon */
+  &::before {
+    content: "\f410"; /* Unicode for the 'fa-minus' icon in Font Awesome */
+    font-family: 'Font Awesome 5 Free'; /* Font family for Font Awesome */
+    color: white; /* Icon color */
+  }
+  @include respond-below(custom991) {
+    padding: 3px 8px;
+  }
+  &:hover{
+    background: $__fire__red;
+    color: $__white;
+  }
+
+}
+
+.btn-reject-table {
+  cursor: pointer;
+  background: #af2b2b;
+  color: #ffffff;
+  width: auto;
+  max-width: 5rm;
+  padding: 3px;
+  margin: 2px;
+  font-weight: 700;
+  @extend %align-items-center;
+  font-size: 10px;
+  img{
+    filter: brightness(0) invert(1);
+  }
+  @include respond-below(custom991) {
+    padding: 3px 8px;
+  }
+  &:hover{
+    background: #720202;
+    color: $__white;
+  }
+
+}
+
+
+.btn-accept-table {
+  cursor: pointer;
+  background: rgba(50, 185, 47, 0.83);
+  color: #ffffff;
+  width: auto;
+  padding: 3px;
+  max-width: 5rm;
+  margin: 2px;
+  font-weight: 700;
+  @extend %align-items-center;
+  font-size: 10px;
+  img{
+    filter: brightness(0) invert(1);
+  }
+  @include respond-below(custom991) {
+    padding: 3px 8px;
+  }
+  &:hover{
+    background: #066b39;
+    color: $__white;
+  }
+
+}
+
+
+.btn-edit {
+  color: $__white;
+  background-color: $__successcolor !important;
+  border-color: $__successcolor !important;
+}
+
+
+.btn-primary {
+  color: $__white;
+  background-color: $__sky__blue !important;
+  border-color: $__sky__blue !important;
+}
+
+
+
+

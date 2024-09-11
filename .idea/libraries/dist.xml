@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="dist">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dist/larocher-2024-05-22.zip!/" />
+      <root url="jar://$PROJECT_DIR$/dist/larocher(2024-06-20).zip!/" />
+      <root url="jar://$PROJECT_DIR$/dist/larocher-2024-05-08.zip!/" />
+      <root url="jar://$PROJECT_DIR$/dist/larocher(2024-05-02).zip!/" />
+      <root url="jar://$PROJECT_DIR$/dist/larocher-2024-05-29.zip!/" />
+      <root url="jar://$PROJECT_DIR$/dist/larocher(2024-05-21).zip!/" />
+      <root url="jar://$PROJECT_DIR$/dist/larocher.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
