@@ -13,10 +13,13 @@
   flex-direction: column;
   align-items: center;
   cursor: pointer;
+  width: 100px;
+  height: 100px;
 }
 
 .vehicle-btn:hover {
   border-color: #06325d;
+
 }
 
 .vehicle-image {
@@ -85,7 +88,7 @@
 }
 
 .vehicle-btn:hover {
-  border-color: #007bff;
+  border-color: #ff1919;
 }
 
 .vehicle-image {
@@ -100,7 +103,18 @@
 
 /* Yellow border and background for selected vehicle */
 .btn-selected {
-  border-color: yellow;
-  background-color: #fff3cd;
+  border-color: #ff8c19;
+  background-color: #06325d;
+  color:#ffe09e !important;;
 }
 
+.cartHeadersColor{
+  background-color: #ffbb0d!important;;
+}
+.cartColor{
+  background-color: #ffcd6d!important;
+}
+.cartBodyColor{
+  background-color: #ffe09e !important;
+
+}

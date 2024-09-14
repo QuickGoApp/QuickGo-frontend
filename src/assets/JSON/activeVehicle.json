@@ -1,0 +1,21 @@
+{
+  "statusCode": 200,
+  "message": "success",
+  "data": [
+    {
+      "coordinates": { "lat": 6.873683, "lng": 79.958035 },
+      "name": "Location 1",
+      "icon": "https://png.pngtree.com/png-vector/20230206/ourmid/pngtree-yellow-car-side-view-vector-illustration-in-trendy-flat-style-isolated-png-image_6585619.png"
+    },
+    {
+      "coordinates": { "lat": 6.911522, "lng": 79.867240 },
+      "name": "Location 2",
+      "icon": "https://png.pngtree.com/png-vector/20230206/ourmid/pngtree-yellow-car-side-view-vector-illustration-in-trendy-flat-style-isolated-png-image_6585619.png"
+    },
+    {
+      "coordinates": { "lat": 6.845000, "lng": 79.935457 },
+      "name": "Location 3",
+      "icon": "https://png.pngtree.com/png-vector/20230206/ourmid/pngtree-yellow-car-side-view-vector-illustration-in-trendy-flat-style-isolated-png-image_6585619.png"
+    }
+  ]
+}
