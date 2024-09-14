@@ -1,7 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {routes} from "../../../core/routes-path/routes";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {Loader} from '@googlemaps/js-api-loader';  // Make sure this is from '@googlemaps/js-api-loader'
+import {Loader} from '@googlemaps/js-api-loader';
+import {DriverService} from "../../../../api-service/service/DriverService";
+import Swal from "sweetalert2";  // Make sure this is from '@googlemaps/js-api-loader'
 
 @Component({
   selector: 'app-home-page',
@@ -15,49 +17,8 @@ export class HomePageComponent implements OnInit {
   activeVehicle: string | null = null; // Track selected vehicle
   submittedCart: any = null; // Store the submitted cart details
 
-
-  vehicleTypes = [
-    {
-      type: 'three_wheel',
-      name: 'Three-Wheel',
-      imageUrl: 'https://www.riyasakwala.lk/public/images/vehicle_type/ad_default/three-wheelers.jpg'
-    },
-    {
-      type: 'car',
-      name: 'Car',
-      imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdQvaj4xjLm09WZ2ynHKU--bLrBE4gQ3dlUQ&s'
-    },
-    {
-      type: 'van',
-      name: 'Van',
-      imageUrl: 'https://static.vecteezy.com/system/resources/thumbnails/008/602/412/small/mpv-van-car-monochrome-isolated-vector.jpg'
-    },
-    {
-      type: 'bike',
-      name: 'Bike',
-      imageUrl: 'https://static.vecteezy.com/system/resources/previews/045/892/561/non_2x/motorbike-icon-symbols-illustration-vector.jpg'
-    }
-  ];
-
-
-  vehicleLocations = [
-    {
-      coordinates: { lat: 6.873683, lng: 79.958035 },
-      name: 'Location 1',
-      icon: 'https://png.pngtree.com/png-vector/20230206/ourmid/pngtree-yellow-car-side-view-vector-illustration-in-trendy-flat-style-isolated-png-image_6585619.png' // Update with actual icon URL
-    },
-    {
-      coordinates: { lat: 6.911522, lng: 79.867240 },
-      name: 'Location 2',
-      icon: 'https://png.pngtree.com/png-vector/20230206/ourmid/pngtree-yellow-car-side-view-vector-illustration-in-trendy-flat-style-isolated-png-image_6585619.png' // Update with actual icon URL
-    },
-    {
-      coordinates: { lat: 6.845000, lng: 79.935457 },
-      name: 'Location 3',
-      icon: 'https://png.pngtree.com/png-vector/20230206/ourmid/pngtree-yellow-car-side-view-vector-illustration-in-trendy-flat-style-isolated-png-image_6585619.png' // Update with actual icon URL
-    }
-  ];
-
+  public vehicleTypes = [];
+  private vehicleLocations = [];
 
   private map!: google.maps.Map;
   private directionsService!: google.maps.DirectionsService;
@@ -66,17 +27,72 @@ export class HomePageComponent implements OnInit {
   private userLocationCircle!: google.maps.Circle; // To store the circle object
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor() {
+  constructor(private driverService:DriverService) {
     this.locationForm = new FormGroup({
       pickupLocation: new FormControl('', [Validators.required]),
       dropLocation: new FormControl('', [Validators.required]),
-      vehicleType: new FormControl('', [Validators.required])
+      vehicleType: new FormControl('', [Validators.required]),
+      contactNumber: new FormControl('', [
+        Validators.required,
+        Validators.pattern('^\\+?\\d{10,15}$') // Example regex to validate phone numbers
+      ])
     });
+
+    this.loadSelectVehicleType();
   }
 
   ngOnInit(): void {
     this.initializeGoogleMaps();
   }
+
+  private loadSelectVehicleType() {
+    this.driverService.getVehicleTypes().subscribe(
+      (data) => {
+        if (data.statusCode === 200) {
+          // Assuming the API returns the 'coordinates', 'name', and 'icon' fields directly
+          this.vehicleTypes = data.data.map((vehicle: any) => {
+            return {
+              type: vehicle.type,
+              name: vehicle.name,
+              imageUrl: vehicle.imageUrl
+            };
+          });
+
+          // Call the method to add markers on the map using updated vehicleLocations
+          this.addVehicleMarkers();
+        } else {
+
+          Swal.fire({
+            title: 'warning!',
+            text: 'vehicle Type cannot be shown.!',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+        }
+      },
+      (error) => {
+        Swal.fire(
+          'Error',
+          error.error.message,
+          'error'
+        );
+      }
+    );
+  }
+
+  onVehicleSelect(type: string): void {
+    // Toggle the selected vehicle (select/deselect)
+    if (this.activeVehicle === type) {
+      this.activeVehicle = null; // Deselect if clicked again
+      this.locationForm.get('vehicleType')?.setValue('');
+    } else {
+      this.activeVehicle = type; // Select the vehicle
+      this.locationForm.get('vehicleType')?.setValue(type);
+    }
+  }
+
+
+
 
   private initializeGoogleMaps(): void {
     const loader = new Loader({
@@ -88,7 +104,7 @@ export class HomePageComponent implements OnInit {
     loader.load().then(() => {
       this.map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
         center: { lat: 7.8731, lng: 80.7718 },
-        zoom: 12
+        zoom: 11
       });
 
       this.directionsService = new google.maps.DirectionsService();
@@ -119,6 +135,7 @@ export class HomePageComponent implements OnInit {
             title: 'Your Location'
           });
 
+
           // Set the pickup location field with the user's current location
           this.geocodeLatLng(userLocation);
 
@@ -134,7 +151,7 @@ export class HomePageComponent implements OnInit {
   }
 
 
-
+//set location
   private geocodeLatLng(latLng: google.maps.LatLng): void {
     this.geocoder.geocode({ location: latLng }, (results, status) => {
       if (status === 'OK') {
@@ -150,20 +167,10 @@ export class HomePageComponent implements OnInit {
   }
 
 
-  onVehicleSelect(type: string): void {
-    // Toggle the selected vehicle (select/deselect)
-    if (this.activeVehicle === type) {
-      this.activeVehicle = null; // Deselect if clicked again
-      this.locationForm.get('vehicleType')?.setValue('');
-    } else {
-      this.activeVehicle = type; // Select the vehicle
-      this.locationForm.get('vehicleType')?.setValue(type);
-    }
-  }
 
   onSubmit(): void {
     if (this.locationForm.valid) {
-      const { pickupLocation, dropLocation, vehicleType } = this.locationForm.value;
+      const { pickupLocation, dropLocation, vehicleType, contactNumber} = this.locationForm.value;
 
       // Simulate cart data for rider details
       this.submittedCart = {
@@ -177,20 +184,23 @@ export class HomePageComponent implements OnInit {
       console.log('Pickup Location:', pickupLocation);
       console.log('Drop Location:', dropLocation);
       console.log('Selected Vehicle:', vehicleType);
+      console.log('Selected contact:', contactNumber);
 
-      // Fetch the user's location again
+      // Fetch the user's current location again
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
+            this.searchTheActiveVehicle();
             // Add a 2km radius circle around the user's location
             this.addRadiusCircle(userLocation);
 
             // Calculate and display the route
-            this.calculateAndDisplayRoute(pickupLocation, dropLocation);
-            // Add markers for vehicle locations
-            this.addVehicleMarkers();
+            //this.calculateAndDisplayRoute(pickupLocation, dropLocation);
+
+            // =======================================
+            this.geocodeLocations();
           },
           () => {
             console.warn('Geolocation failed or was denied by the user. Showing default location.');
@@ -204,6 +214,7 @@ export class HomePageComponent implements OnInit {
     }
   }
 
+  //radius set
   private addRadiusCircle(center: google.maps.LatLng): void {
     // Remove the existing circle if it exists
     if (this.userLocationCircle) {
@@ -222,19 +233,38 @@ export class HomePageComponent implements OnInit {
     });
   }
 
-  calculateAndDisplayRoute(pickupLocation: string, destinationCoordinates: google.maps.LatLngLiteral): void {
-    this.directionsService.route(
-      {
-        origin: pickupLocation,
-        destination: destinationCoordinates,
-        travelMode: google.maps.TravelMode.DRIVING
-      },
-      (response, status) => {
-        if (status === 'OK') {
-          this.directionsRenderer.setDirections(response);
+
+  private searchTheActiveVehicle() {
+    this.driverService.getActiveVehicle().subscribe(
+      (data) => {
+        if (data.statusCode === 200) {
+          // Assuming the API returns the 'coordinates', 'name', and 'icon' fields directly
+          this.vehicleLocations = data.data.map((vehicle: any) => {
+            return {
+              coordinates: vehicle.coordinates,
+              name: vehicle.name,
+              icon: vehicle.icon
+            };
+          });
+
+          // Call the method to add markers on the map using updated vehicleLocations
+          this.addVehicleMarkers();
         } else {
-          console.error('Directions request failed due to ' + status);
+
+          Swal.fire({
+            title: 'warning!',
+            text: 'Error fetching vehicle locations.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
         }
+      },
+      (error) => {
+        Swal.fire(
+          'Error',
+          error.error.message,
+          'error'
+        );
       }
     );
   }
@@ -251,10 +281,29 @@ export class HomePageComponent implements OnInit {
         title: location.name
       }).addListener('click', () => {
         // Handle marker click event
-        this.calculateAndDisplayRoute(this.locationForm.get('pickupLocation')?.value, location.coordinates);
+        //this.calculateAndDisplayRoute(this.locationForm.get('pickupLocation')?.value, location.coordinates);
       });
     });
   }
+
+
+  // calculateAndDisplayRoute(pickupLocation: string, destinationCoordinates: google.maps.LatLngLiteral): void {
+  //   this.directionsService.route(
+  //     {
+  //       origin: pickupLocation,
+  //       destination: destinationCoordinates,
+  //       travelMode: google.maps.TravelMode.DRIVING
+  //     },
+  //     (response, status) => {
+  //       if (status === 'OK') {
+  //         this.directionsRenderer.setDirections(response);
+  //       } else {
+  //         console.error('Directions request failed due to ' + status);
+  //       }
+  //     }
+  //   );
+  // }
+
 
 
   // Toggle like/unlike for the heart button
@@ -269,6 +318,73 @@ export class HomePageComponent implements OnInit {
       }
     }
   }
+
+  // ============================
+
+
+  geocodeLocations() {
+    // Get input values from the form
+    const { pickupLocation, dropLocation } = this.locationForm.value;
+
+    // Create a Geocoder instance
+    const geocoder = new google.maps.Geocoder();
+
+    // Geocode pickup location
+    geocoder.geocode({ address: pickupLocation }, (results, status) => {
+      if (status === 'OK' && results[0]) {
+        const pickupLatLng = results[0].geometry.location;
+        this.addMarker(pickupLatLng, 'Pickup Location');
+        this.addRadiusCircle(pickupLatLng);  // Optional: Add a circle around the pickup location
+
+        // After geocoding pickup location, geocode the drop location
+        this.geocodeDropLocation(dropLocation, pickupLatLng);
+      } else {
+        console.error(`Geocode failed for pickup location: ${status}`);
+      }
+    });
+  }
+
+  geocodeDropLocation(dropLocation: string, pickupLatLng: google.maps.LatLng) {
+    const geocoder = new google.maps.Geocoder();
+
+    // Geocode drop location
+    geocoder.geocode({ address: dropLocation }, (results, status) => {
+      if (status === 'OK' && results[0]) {
+        const dropLatLng = results[0].geometry.location;
+        this.addMarker(dropLatLng, 'Drop Location');
+
+        // After both pickup and drop locations are geocoded, show the route between them
+        this.displayRoute(pickupLatLng, dropLatLng);
+      } else {
+        console.error(`Geocode failed for drop location: ${status}`);
+      }
+    });
+  }
+
+  displayRoute(pickupLatLng: google.maps.LatLng, dropLatLng: google.maps.LatLng) {
+    const request: google.maps.DirectionsRequest = {
+      origin: pickupLatLng,
+      destination: dropLatLng,
+      travelMode: google.maps.TravelMode.DRIVING, // You can change to WALKING, BICYCLING, TRANSIT if needed
+    };
+
+    this.directionsService.route(request, (result, status) => {
+      if (status === 'OK') {
+        this.directionsRenderer.setDirections(result);
+      } else {
+        console.error('Directions request failed due to ' + status);
+      }
+    });
+  }
+
+  addMarker(location: google.maps.LatLng, title: string) {
+    new google.maps.Marker({
+      position: location,
+      map: this.map,
+      title: title,
+    });
+  }
+
 
 
 }
