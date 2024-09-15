@@ -18,7 +18,8 @@ export class HomePageComponent implements OnInit {
   submittedCart: any = null; // Store the submitted cart details
 
   public vehicleTypes = [];
-  private vehicleLocations = [];
+  public isLoader = false;
+  private activeVehicleLocations = [];
 
   private map!: google.maps.Map;
   private directionsService!: google.maps.DirectionsService;
@@ -26,8 +27,12 @@ export class HomePageComponent implements OnInit {
   private geocoder!: google.maps.Geocoder;
   private userLocationCircle!: google.maps.Circle; // To store the circle object
 
+
+  pricePerKm = 100; // 1 km = Rs 100
+  totalPrice = 0;
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor(private driverService:DriverService) {
+  constructor(private driverService: DriverService) {
     this.locationForm = new FormGroup({
       pickupLocation: new FormControl('', [Validators.required]),
       dropLocation: new FormControl('', [Validators.required]),
@@ -45,6 +50,7 @@ export class HomePageComponent implements OnInit {
     this.initializeGoogleMaps();
   }
 
+  // form vehicles load
   private loadSelectVehicleType() {
     this.driverService.getVehicleTypes().subscribe(
       (data) => {
@@ -58,8 +64,6 @@ export class HomePageComponent implements OnInit {
             };
           });
 
-          // Call the method to add markers on the map using updated vehicleLocations
-          this.addVehicleMarkers();
         } else {
 
           Swal.fire({
@@ -91,9 +95,7 @@ export class HomePageComponent implements OnInit {
     }
   }
 
-
-
-
+// google map set
   private initializeGoogleMaps(): void {
     const loader = new Loader({
       apiKey: 'AIzaSyCaKbVhcX_22R_pRKDYuNA7vox-PtGaDkI',
@@ -103,7 +105,7 @@ export class HomePageComponent implements OnInit {
 
     loader.load().then(() => {
       this.map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
-        center: { lat: 7.8731, lng: 80.7718 },
+        center: {lat: 7.8731, lng: 80.7718},
         zoom: 11
       });
 
@@ -114,7 +116,7 @@ export class HomePageComponent implements OnInit {
       this.geocoder = new google.maps.Geocoder();
 
       // set the current locaion
-      this.setCurrentLocation();
+      // this.setCurrentLocation();
 
 
     }).catch(error => {
@@ -153,7 +155,7 @@ export class HomePageComponent implements OnInit {
 
 //set location
   private geocodeLatLng(latLng: google.maps.LatLng): void {
-    this.geocoder.geocode({ location: latLng }, (results, status) => {
+    this.geocoder.geocode({location: latLng}, (results, status) => {
       if (status === 'OK') {
         if (results[0]) {
           this.locationForm.get('pickupLocation')?.setValue(results[0].formatted_address);
@@ -167,19 +169,12 @@ export class HomePageComponent implements OnInit {
   }
 
 
-
   onSubmit(): void {
+    this.isLoader = true;
+    // reload the map
+    this.initializeGoogleMaps();
     if (this.locationForm.valid) {
-      const { pickupLocation, dropLocation, vehicleType, contactNumber} = this.locationForm.value;
-
-      // Simulate cart data for rider details
-      this.submittedCart = {
-        riderImage: 'https://www.riyasakwala.lk/public/images/vehicle_type/ad_default/three-wheelers.jpg',  // Replace with actual rider image
-        vehicleNumber: 'ABC-1234',
-        vehicleColor: 'Yellow',
-        vehicleType,
-        liked: false  // Initially not liked
-      };
+      const {pickupLocation, dropLocation, vehicleType, contactNumber} = this.locationForm.value;
 
       console.log('Pickup Location:', pickupLocation);
       console.log('Drop Location:', dropLocation);
@@ -196,11 +191,13 @@ export class HomePageComponent implements OnInit {
             // Add a 2km radius circle around the user's location
             this.addRadiusCircle(userLocation);
 
-            // Calculate and display the route
-            //this.calculateAndDisplayRoute(pickupLocation, dropLocation);
+            // Geocode the pickup location and focus the map on it
+            this.geocodePickupLocationAndFocusMap(pickupLocation);
 
             // =======================================
             this.geocodeLocations();
+
+            this.isLoader = false;
           },
           () => {
             console.warn('Geolocation failed or was denied by the user. Showing default location.');
@@ -213,6 +210,30 @@ export class HomePageComponent implements OnInit {
       console.log('Form is invalid');
     }
   }
+
+  geocodePickupLocationAndFocusMap(pickupLocation: string) {
+    const geocoder = new google.maps.Geocoder();
+
+    // Geocode the pickup location
+    geocoder.geocode({address: pickupLocation}, (results, status) => {
+      if (status === 'OK' && results[0]) {
+        const pickupLatLng = results[0].geometry.location;
+
+        // Add marker for the pickup location
+        this.addMarker(pickupLatLng, 'Pickup Location');
+
+        // Center the map on the pickup location and set a zoom level
+        this.map.setCenter(pickupLatLng);
+        this.map.setZoom(11);  // Adjust the zoom level as needed
+
+        // Optional: Add a circle around the pickup location
+        this.addRadiusCircle(pickupLatLng);
+      } else {
+        console.error(`Geocode failed for pickup location: ${status}`);
+      }
+    });
+  }
+
 
   //radius set
   private addRadiusCircle(center: google.maps.LatLng): void {
@@ -239,11 +260,18 @@ export class HomePageComponent implements OnInit {
       (data) => {
         if (data.statusCode === 200) {
           // Assuming the API returns the 'coordinates', 'name', and 'icon' fields directly
-          this.vehicleLocations = data.data.map((vehicle: any) => {
+          this.activeVehicleLocations = data.data.map((vehicle: any) => {
             return {
-              coordinates: vehicle.coordinates,
-              name: vehicle.name,
-              icon: vehicle.icon
+              coordinates: vehicle.coordinates, // lat, lng
+              vehicleType: vehicle.type, //vehicle type
+              name: vehicle.name,               // Location name
+              icon: vehicle.icon,               // Icon URL
+              image: vehicle.image,
+              vehicleNumber: vehicle.vehicleNumber, // Vehicle number
+              color: vehicle.color,             // Vehicle color
+              rate: vehicle.rate,               // Vehicle rate
+              seats: vehicle.seats,             // Number of seats
+              isFavorite: vehicle.isFavorite    // Whether it's a favorite
             };
           });
 
@@ -270,7 +298,8 @@ export class HomePageComponent implements OnInit {
   }
 
   private addVehicleMarkers(): void {
-    this.vehicleLocations.forEach(location => {
+    // active vehicle list show
+    this.activeVehicleLocations.forEach(location => {
       new google.maps.Marker({
         position: location.coordinates,
         map: this.map,
@@ -279,32 +308,15 @@ export class HomePageComponent implements OnInit {
           scaledSize: new google.maps.Size(40, 40), // Size of the icon in pixels
         },
         title: location.name
+        // active vehicle click
       }).addListener('click', () => {
         // Handle marker click event
-        //this.calculateAndDisplayRoute(this.locationForm.get('pickupLocation')?.value, location.coordinates);
+        // Set the clicked vehicle's details to the submittedCart object
+        this.submittedCart = location;
+
       });
     });
   }
-
-
-  // calculateAndDisplayRoute(pickupLocation: string, destinationCoordinates: google.maps.LatLngLiteral): void {
-  //   this.directionsService.route(
-  //     {
-  //       origin: pickupLocation,
-  //       destination: destinationCoordinates,
-  //       travelMode: google.maps.TravelMode.DRIVING
-  //     },
-  //     (response, status) => {
-  //       if (status === 'OK') {
-  //         this.directionsRenderer.setDirections(response);
-  //       } else {
-  //         console.error('Directions request failed due to ' + status);
-  //       }
-  //     }
-  //   );
-  // }
-
-
 
   // Toggle like/unlike for the heart button
   toggleLike(): void {
@@ -319,18 +331,19 @@ export class HomePageComponent implements OnInit {
     }
   }
 
+
   // ============================
 
 
   geocodeLocations() {
     // Get input values from the form
-    const { pickupLocation, dropLocation } = this.locationForm.value;
+    const {pickupLocation, dropLocation} = this.locationForm.value;
 
     // Create a Geocoder instance
     const geocoder = new google.maps.Geocoder();
 
     // Geocode pickup location
-    geocoder.geocode({ address: pickupLocation }, (results, status) => {
+    geocoder.geocode({address: pickupLocation}, (results, status) => {
       if (status === 'OK' && results[0]) {
         const pickupLatLng = results[0].geometry.location;
         this.addMarker(pickupLatLng, 'Pickup Location');
@@ -348,13 +361,15 @@ export class HomePageComponent implements OnInit {
     const geocoder = new google.maps.Geocoder();
 
     // Geocode drop location
-    geocoder.geocode({ address: dropLocation }, (results, status) => {
+    geocoder.geocode({address: dropLocation}, (results, status) => {
       if (status === 'OK' && results[0]) {
         const dropLatLng = results[0].geometry.location;
         this.addMarker(dropLatLng, 'Drop Location');
 
         // After both pickup and drop locations are geocoded, show the route between them
         this.displayRoute(pickupLatLng, dropLatLng);
+        //calculate the price
+        this.calculateDistanceAndPrice(pickupLatLng, dropLatLng);
       } else {
         console.error(`Geocode failed for drop location: ${status}`);
       }
@@ -385,6 +400,44 @@ export class HomePageComponent implements OnInit {
     });
   }
 
+  calculateDistanceAndPrice(pickupLatLng: google.maps.LatLng, dropLatLng: google.maps.LatLng) {
+    const request: google.maps.DirectionsRequest = {
+      origin: pickupLatLng,
+      destination: dropLatLng,
+      travelMode: google.maps.TravelMode.DRIVING, // Same travel mode as in the route display function
+    };
 
+    this.directionsService.route(request, (result, status) => {
+      if (status === 'OK') {
+        // Extract the distance from the route
+        const route = result.routes[0];
+        const leg = route.legs[0]; // Get the first leg of the route
+        const distanceInMeters = leg.distance.value; // Distance in meters
+        const distanceInKm = distanceInMeters / 1000; // Convert to kilometers
+
+        // Calculate the total price based on the distance
+        this.totalPrice = distanceInKm * this.pricePerKm;
+
+        // Log or display the calculated distance and price
+        console.log(`Total distance: ${distanceInKm.toFixed(2)} km`);
+        console.log(`Total price: Rs ${this.totalPrice.toFixed(2)}`);
+
+        // Optional: Update the UI with the calculated price
+        document.getElementById('priceDisplay').innerText = `Total Price: Rs ${this.totalPrice.toFixed(2)}`;
+      } else {
+        console.error('Distance calculation failed due to ' + status);
+      }
+    });
+  }
+
+
+  public clearMap() {
+    this.isLoader=false;
+    this.activeVehicle = null;
+    this.activeVehicleLocations = [];
+    this.locationForm.reset();
+    this.submittedCart = null;
+    this.initializeGoogleMaps();
+  }
 
 }
