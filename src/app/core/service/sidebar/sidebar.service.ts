@@ -71,13 +71,7 @@ export class SidebarService {
           showSubRoute: false,
           icon: 'user',
           subMenus: [
-            {
-              menuValue: 'Home Page',
-              hasSubRoute: false,
-              showSubRoute: false,
-              route: routes.homePage,
-              subRoutes: [],
-            },
+            //add other routes
           ],
         },
       ],

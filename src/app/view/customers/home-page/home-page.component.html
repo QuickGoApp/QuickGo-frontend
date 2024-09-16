@@ -9,14 +9,15 @@
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
+          <a class="nav-link active" aria-current="page" [routerLink]="routes.dashboard">Home</a>
         </li>
 
       </ul>
       <span class="navbar-text">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="routes.signIn">Sign In</a>
+            <a class="dropdown-item logout " [routerLink]="routes.signIn">Logout
+              <img src="assets/img/icons/log-out.svg"  alt="img"/></a>
           </li>
         </ul>
       </span>

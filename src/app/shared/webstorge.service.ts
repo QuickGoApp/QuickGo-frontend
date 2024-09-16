@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { routes } from '../core/routes-path/routes';
+import {el} from "@fullcalendar/core/internal-common";
 
 
 @Injectable({
@@ -20,7 +21,16 @@ export class WebstorgeService {
     sessionStorage.setItem('userId', data.userCode);
     sessionStorage.setItem('privilegeIds', data.privilegeIds);
 
-    this.router.navigate([routes.dashboard]);
+    // role wise manage main ui
+    // this.router.navigate([routes.dashboard]);
+    const role = (sessionStorage.getItem("role"))
+    if(role == "ROLE_PASSENGER"){
+      this.router.navigate([routes.homePage]);
+    }else if(role =="ROLE_DRIVER"){
+      this.router.navigate([routes.addUser]);
+    }else {
+      this.router.navigate([routes.dashboard]);
+    }
   }
   public submit(): void {
     sessionStorage.setItem('authenticated', 'true');

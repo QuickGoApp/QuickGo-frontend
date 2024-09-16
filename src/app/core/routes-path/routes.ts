@@ -45,7 +45,7 @@ export class routes {
   }
 
   public static get homePage(): string {
-    return this.customer + '/home-page';
+    return this.base + '/home-page';
   }
 
 
