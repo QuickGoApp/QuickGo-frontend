@@ -44,8 +44,11 @@ export class routes {
     return this.core + '/customer';
   }
 
-  public static get homePage(): string {
-    return this.base + '/home-page';
+  public static get passengerHomePage(): string {
+    return this.base + '/passenger-home-page';
+  }
+  public static get driverHomePage(): string {
+    return this.base + '/driver-home-page';
   }
 
 

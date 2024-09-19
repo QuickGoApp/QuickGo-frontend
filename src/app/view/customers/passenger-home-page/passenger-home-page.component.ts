@@ -3,14 +3,15 @@ import {routes} from "../../../core/routes-path/routes";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Loader} from '@googlemaps/js-api-loader';
 import {DriverService} from "../../../../api-service/service/DriverService";
-import Swal from "sweetalert2";  // Make sure this is from '@googlemaps/js-api-loader'
+import Swal from "sweetalert2";
+import {ApiResultFormatModel} from "../../../../api-service/model/common/ApiResultFormatModel";  // Make sure this is from '@googlemaps/js-api-loader'
 
 @Component({
   selector: 'app-home-page',
-  templateUrl: './home-page.component.html',
-  styleUrls: ['./home-page.component.scss']
+  templateUrl: './passenger-home-page.component.html',
+  styleUrls: ['./passenger-home-page.component.scss']
 })
-export class HomePageComponent implements OnInit {
+export class PassengerHomePageComponent implements OnInit {
 
   protected readonly routes = routes;
   locationForm: FormGroup;
@@ -20,6 +21,8 @@ export class HomePageComponent implements OnInit {
   public vehicleTypes = [];
   public isLoader = false;
   private activeVehicleLocations = [];
+  private pickupLatLng={};
+  private dropLatLng={};
 
   private map!: google.maps.Map;
   private directionsService!: google.maps.DirectionsService;
@@ -30,6 +33,7 @@ export class HomePageComponent implements OnInit {
 
   pricePerKm = 100; // 1 km = Rs 100
   totalPrice = 0;
+
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor(private driverService: DriverService) {
@@ -115,16 +119,14 @@ export class HomePageComponent implements OnInit {
 
       this.geocoder = new google.maps.Geocoder();
 
-      // set the current locaion
-      // this.setCurrentLocation();
-
 
     }).catch(error => {
       console.error('Error loading Google Maps:', error);
     });
   }
 
-  private setCurrentLocation(): void {
+  public setCurrentLocation(): void {
+    this.clearMap();
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -137,11 +139,11 @@ export class HomePageComponent implements OnInit {
             title: 'Your Location'
           });
 
-
           // Set the pickup location field with the user's current location
           this.geocodeLatLng(userLocation);
-
-
+          // Center the map on the pickup location and set a zoom level
+          this.map.setCenter(userLocation);
+          this.map.setZoom(11);  // Adjust the zoom level as needed
         },
         () => {
           console.warn('Geolocation failed or was denied by the user. Showing default location.');
@@ -181,35 +183,79 @@ export class HomePageComponent implements OnInit {
       console.log('Selected Vehicle:', vehicleType);
       console.log('Selected contact:', contactNumber);
 
-      // Fetch the user's current location again
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-            this.searchTheActiveVehicle();
-            // Add a 2km radius circle around the user's location
-            this.addRadiusCircle(userLocation);
+      // Geocode the pickup location and focus the map on it
+      this.geocodePickupLocationAndFocusMap(pickupLocation);
+      this.geocodeLocations();
 
-            // Geocode the pickup location and focus the map on it
-            this.geocodePickupLocationAndFocusMap(pickupLocation);
 
-            // =======================================
-            this.geocodeLocations();
+      //getGeolocationDrivers
+      const payload = {
+        pickupLocation: this.pickupLatLng,
+        dropLocation: this.dropLatLng,
+        vehicleType: vehicleType,
+        contactNumber: contactNumber,
+      };
 
-            this.isLoader = false;
-          },
-          () => {
-            console.warn('Geolocation failed or was denied by the user. Showing default location.');
-          }
-        );
-      } else {
-        console.warn('Geolocation is not supported by this browser. Showing default location.');
-      }
+      this.driverService.getGeolocationDrivers(payload).subscribe((response: ApiResultFormatModel) => {
+        if (response.statusCode === 200) {
+          this.activeVehicleLocations = response.data.map((vehicle: any) => {
+            return {
+              coordinates: vehicle.coordinates, // lat, lng
+              vehicleType: vehicle.type, //vehicle type
+              name: vehicle.name,               // Location name
+              icon: vehicle.icon,               // Icon URL
+              image: vehicle.image,
+              vehicleNumber: vehicle.vehicleNumber, // Vehicle number
+              color: vehicle.color,             // Vehicle color
+              rate: vehicle.rate,               // Vehicle rate
+              seats: vehicle.seats,             // Number of seats
+              isFavorite: vehicle.favorite,   // Whether it's a favorite
+              userCode:vehicle.userCode
+            };
+          });
+
+          // Call the method to add markers on the map using updated vehicleLocations
+          this.addVehicleMarkers();
+        } else {
+
+          Swal.fire({
+            title: 'warning!',
+            text: 'Error fetching vehicle locations.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+        }
+      });
+
+      this.isLoader = false;
+
     } else {
       console.log('Form is invalid');
     }
   }
+
+  private addVehicleMarkers(): void {
+    // active vehicle list show
+    this.activeVehicleLocations.forEach(location => {
+      new google.maps.Marker({
+        position: location.coordinates,
+        map: this.map,
+        icon: {
+          url: location.icon, // URL of the icon
+          scaledSize: new google.maps.Size(60, 60), // Size of the icon in pixels
+        },
+        title: location.name
+        // active vehicle click
+      }).addListener('click', () => {
+        // Handle marker click event
+        // Set the clicked vehicle's details to the submittedCart object
+        this.submittedCart = location;
+
+      });
+    });
+  }
+
 
   geocodePickupLocationAndFocusMap(pickupLocation: string) {
     const geocoder = new google.maps.Geocoder();
@@ -228,6 +274,8 @@ export class HomePageComponent implements OnInit {
 
         // Optional: Add a circle around the pickup location
         this.addRadiusCircle(pickupLatLng);
+
+
       } else {
         console.error(`Geocode failed for pickup location: ${status}`);
       }
@@ -255,68 +303,7 @@ export class HomePageComponent implements OnInit {
   }
 
 
-  private searchTheActiveVehicle() {
-    this.driverService.getActiveVehicle().subscribe(
-      (data) => {
-        if (data.statusCode === 200) {
-          // Assuming the API returns the 'coordinates', 'name', and 'icon' fields directly
-          this.activeVehicleLocations = data.data.map((vehicle: any) => {
-            return {
-              coordinates: vehicle.coordinates, // lat, lng
-              vehicleType: vehicle.type, //vehicle type
-              name: vehicle.name,               // Location name
-              icon: vehicle.icon,               // Icon URL
-              image: vehicle.image,
-              vehicleNumber: vehicle.vehicleNumber, // Vehicle number
-              color: vehicle.color,             // Vehicle color
-              rate: vehicle.rate,               // Vehicle rate
-              seats: vehicle.seats,             // Number of seats
-              isFavorite: vehicle.isFavorite    // Whether it's a favorite
-            };
-          });
 
-          // Call the method to add markers on the map using updated vehicleLocations
-          this.addVehicleMarkers();
-        } else {
-
-          Swal.fire({
-            title: 'warning!',
-            text: 'Error fetching vehicle locations.',
-            icon: 'warning',
-            confirmButtonText: 'OK'
-          });
-        }
-      },
-      (error) => {
-        Swal.fire(
-          'Error',
-          error.error.message,
-          'error'
-        );
-      }
-    );
-  }
-
-  private addVehicleMarkers(): void {
-    // active vehicle list show
-    this.activeVehicleLocations.forEach(location => {
-      new google.maps.Marker({
-        position: location.coordinates,
-        map: this.map,
-        icon: {
-          url: location.icon, // URL of the icon
-          scaledSize: new google.maps.Size(40, 40), // Size of the icon in pixels
-        },
-        title: location.name
-        // active vehicle click
-      }).addListener('click', () => {
-        // Handle marker click event
-        // Set the clicked vehicle's details to the submittedCart object
-        this.submittedCart = location;
-
-      });
-    });
-  }
 
   // Toggle like/unlike for the heart button
   toggleLike(): void {
@@ -351,6 +338,8 @@ export class HomePageComponent implements OnInit {
 
         // After geocoding pickup location, geocode the drop location
         this.geocodeDropLocation(dropLocation, pickupLatLng);
+
+
       } else {
         console.error(`Geocode failed for pickup location: ${status}`);
       }
@@ -366,8 +355,13 @@ export class HomePageComponent implements OnInit {
         const dropLatLng = results[0].geometry.location;
         this.addMarker(dropLatLng, 'Drop Location');
 
+        //set the pickup and drop lat lang
+        this.pickupLatLng= { lat: pickupLatLng.lat(), lng: pickupLatLng.lng() };
+        this.dropLatLng = { lat: dropLatLng.lat(), lng: dropLatLng.lng() };
+
         // After both pickup and drop locations are geocoded, show the route between them
         this.displayRoute(pickupLatLng, dropLatLng);
+
         //calculate the price
         this.calculateDistanceAndPrice(pickupLatLng, dropLatLng);
       } else {
@@ -375,6 +369,8 @@ export class HomePageComponent implements OnInit {
       }
     });
   }
+
+
 
   displayRoute(pickupLatLng: google.maps.LatLng, dropLatLng: google.maps.LatLng) {
     const request: google.maps.DirectionsRequest = {
@@ -432,7 +428,7 @@ export class HomePageComponent implements OnInit {
 
 
   public clearMap() {
-    this.isLoader=false;
+    this.isLoader = false;
     this.activeVehicle = null;
     this.activeVehicleLocations = [];
     this.locationForm.reset();

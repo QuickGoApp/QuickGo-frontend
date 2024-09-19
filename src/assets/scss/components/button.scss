@@ -49,6 +49,11 @@
   color: $__white;
   background-color: $__fire__red !important;
   border-color: $__fire__red !important;
+
+  &:hover {
+    background: #932828;
+    color: $__white;
+  }
 }
 
 .btn-add {

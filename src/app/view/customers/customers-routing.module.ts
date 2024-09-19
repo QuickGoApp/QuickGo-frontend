@@ -9,9 +9,14 @@ const routes: Routes = [
     component: CustomersComponent,
     children: [
       {
-        path: 'home-page',
+        path: 'passenger-home-page',
         loadChildren: () =>
-          import('./home-page/home-page.module').then((m) => m.HomePageModule),
+          import('./passenger-home-page/passenger-home-page.module').then((m) => m.PassengerHomePageModule),
+      },
+      {
+        path: 'driver-home-page',
+        loadChildren: () =>
+          import('./driver-home-page/driver-home-home-page.module').then((m) => m.DriverHomeHomePageModule),
       }
     ],
   },

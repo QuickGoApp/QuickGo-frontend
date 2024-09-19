@@ -92,14 +92,14 @@ export class SidebarService {
               menuValue: 'Create Schedule',
               hasSubRoute: false,
               showSubRoute: false,
-              route: routes.homePage,
+              route: routes.passengerHomePage,
               subRoutes: [],
             },
             {
               menuValue: 'Add Exercise',
               hasSubRoute: false,
               showSubRoute: false,
-              route: routes.homePage,
+              route: routes.passengerHomePage,
               subRoutes: [],
             },
 

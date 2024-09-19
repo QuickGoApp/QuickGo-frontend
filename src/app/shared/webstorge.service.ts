@@ -25,9 +25,9 @@ export class WebstorgeService {
     // this.router.navigate([routes.dashboard]);
     const role = (sessionStorage.getItem("role"))
     if(role == "ROLE_PASSENGER"){
-      this.router.navigate([routes.homePage]);
+      this.router.navigate([routes.passengerHomePage]);
     }else if(role =="ROLE_DRIVER"){
-      this.router.navigate([routes.addUser]);
+      this.router.navigate([routes.driverHomePage]);
     }else {
       this.router.navigate([routes.dashboard]);
     }
