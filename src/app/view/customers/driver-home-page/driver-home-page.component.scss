@@ -1,0 +1,56 @@
+.btn-selected {
+  border-color: #ff8c19;
+  background-color: #06325d;
+  color:#ffe09e !important;;
+}
+
+.cartHeadersColor{
+  background-color: #ffbb0d!important;;
+}
+.cartColor{
+  background-color: #ffcd6d!important;
+}
+.cartBodyColor{
+  background-color: #ffe3af !important;
+
+}
+
+//==================
+/* Notification Card Custom Styles */
+.notification-card {
+  background-color: #fff8db; /* Light yellow background for notification */
+  border-left: 5px solid #ffd700; /* Yellow border to highlight the notification */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.notification-icon img {
+  width: 40px;
+  height: 40px;
+}
+
+.notification-title {
+  font-weight: bold;
+  color: #343a40;
+}
+
+.notification-message {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border: none;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+}
+
+.btn {
+  padding: 8px 15px;
+  border-radius: 5px;
+}
