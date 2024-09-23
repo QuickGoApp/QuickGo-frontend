@@ -28,4 +28,8 @@ export  class DriverService {
       })
     );
   }
+  getGeolocationDrivers(payload: any) {
+    const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
+    return this.http.post<ApiResultFormatModel>(environment.baseURL + 'location/getGeolocationDrivers', payload, {headers});
+  }
 }

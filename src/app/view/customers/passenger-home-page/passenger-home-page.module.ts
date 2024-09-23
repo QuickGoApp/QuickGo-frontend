@@ -1,25 +1,25 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { HomePageRoutingModule } from './home-page-routing.module';
+import { PassengerHomePageRoutingModule } from './passenger-home-page-routing.module';
 import {ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MatOptionModule} from "@angular/material/core";
 import {MatSelectModule} from "@angular/material/select";
-import {HomePageComponent} from "./home-page.component";
+import {PassengerHomePageComponent} from "./passenger-home-page.component";
 import {GoogleMapsModule} from "@angular/google-maps";
 import {FeatherModule} from "angular-feather";
 
 
 @NgModule({
   declarations: [
-    HomePageComponent
+    PassengerHomePageComponent
   ],
     imports: [
 
         ReactiveFormsModule,
         CommonModule,
-        HomePageRoutingModule,
+        PassengerHomePageRoutingModule,
         NgSelectModule,
         MatOptionModule,
         MatSelectModule,
@@ -28,4 +28,4 @@ import {FeatherModule} from "angular-feather";
 
     ]
 })
-export class HomePageModule { }
+export class PassengerHomePageModule { }

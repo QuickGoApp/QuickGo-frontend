@@ -1,7 +1,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCaKbVhcX_22R_pRKDYuNA7vox-PtGaDkI"></script>
 <nav class="navbar navbar-expand-lg navbar-light cartHeadersColor">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Navbar w/ text</a>
+    <a class="navbar-brand" href="#">Quick Go</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
             aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -9,14 +9,15 @@
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
+          <a  class="nav-link active" aria-current="page" [routerLink]="routes.dashboard">Account</a>
         </li>
 
       </ul>
       <span class="navbar-text">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="routes.signIn">Sign In</a>
+            <a class="dropdown-item logout " [routerLink]="routes.signIn">Logout
+              <img src="assets/img/icons/log-out.svg"  alt="img"/></a>
           </li>
         </ul>
       </span>
@@ -28,7 +29,7 @@
   <!-- Google Map Integration -->
   <div class=" mt-4">
     <div class="row">
-      <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
+      <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8">
         <div class="card cartBodyColor">
           <div class="card-body d-flex flex-row align-items-center">
             <!-- This is where Google Map will render -->
@@ -37,7 +38,7 @@
         </div>
       </div>
 <!--     active vehicle card and form card ui-->
-      <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
+      <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4">
 
         <!-- vehicle Rider Cart Section -->
         <div class="row">
@@ -68,6 +69,8 @@
                               style="font-size: 10px;"></i>
                         </ng-container>
                       </p>
+                      <button class="btn btn-clear mr-2">Request</button>
+                      <button class="btn btn-cancel mr-2">Cancel</button>
                     </div>
 
                     <!-- Heart Button for Favorite -->
@@ -75,7 +78,6 @@
                       <span style="width: 50px; height: 50px" *ngIf="submittedCart.isFavorite" class="text-danger">&#10084;</span>
                       <span style="width: 50px; height: 50px" *ngIf="!submittedCart.isFavorite" class="text-muted">&#10084;</span>
                     </button>
-
 
 
                   </div>
@@ -86,17 +88,22 @@
         </div>
 
         <!-- Card for pickup and drop-off locations form -->
-        <div class="row">
+        <div class="row" >
           <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
             <div class="card cartBodyColor">
-              <div class="card-body">
+              <div class="card-body ">
                 <h5 class="card-title">Enter Ride Details</h5>
 
                 <form [formGroup]="locationForm" >
                   <!-- Pickup Location Input -->
                   <div class="mb-3">
                     <label for="pickupLocation" class="form-label">Pickup Location</label>
-                    <input type="text" id="pickupLocation" class="form-control" formControlName="pickupLocation">
+                    <div class="input-group">
+                      <input type="text" id="pickupLocation" class="form-control" formControlName="pickupLocation">
+                      <button type="button" class="btn btn-outline-secondary" (click)="setCurrentLocation()">
+                        <i class="fa fa-map-marker-alt"></i> <!-- Location icon -->
+                      </button>
+                    </div>
                     <div
                       *ngIf="locationForm.get('pickupLocation')?.invalid && locationForm.get('pickupLocation')?.touched"
                       class="text-danger">
@@ -157,7 +164,11 @@
                     Search
                   </button>
 
-                  <button (click)="clearMap()">asitha</button>
+                  <button  (click)="clearMap()" style="width: 100%" type="button" class="btn btn-clear mt-2" [disabled]="locationForm.invalid">
+                    <i-feather name="clear"></i-feather>&nbsp;&nbsp;
+                    Close
+                  </button>
+
                 </form>
               </div>
             </div>
@@ -167,8 +178,50 @@
       </div>
     </div>
 
-
-
   </div>
 </div>
+
+<!--footer-->
+<footer class="bg-dark text-white text-center text-lg-start">
+  <div class="container p-4">
+    <div class="row" style="color: #ffbb0d!important;">
+      <!-- About Section -->
+      <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+        <h5 class="text-uppercase">Quick Go</h5>
+        <p style="color: #ffd573!important;">
+          Your trusted ride-sharing service.
+        </p>
+      </div>
+
+      <!-- Links Section -->
+      <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+        <h5 class="text-uppercase">Useful Links</h5>
+        <ul class="list-unstyled" >
+          <li>
+            <a style="color: #ffd573!important;" [routerLink]="routes.dashboard" class="text-white">Account</a>
+          </li>
+          <li>
+            <a style="color: #ffd573!important;" [routerLink]="routes.signIn" class="text-white">Logout</a>
+          </li>
+          <li>
+            <a style="color: #ffd573!important;" href="#" class="text-white">Contact Us</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Social Media Section -->
+      <div class="col-lg-4 col-md-12 mb-4 mb-md-0">
+        <h5 class="text-uppercase">Follow Us</h5>
+        <a style="color: #ffd573!important; font-size: 15px" href="#" class="text-white me-4"><i class="fab fa-facebook-f"></i></a>
+        <a style="color: #ffd573!important; font-size: 15px" href="#" class="text-white me-4"><i class="fab fa-twitter"></i></a>
+        <a style="color: #ffd573!important; font-size: 15px" href="#" class="text-white me-4"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+    © 2024 Quick Go, All Rights Reserved
+  </div>
+</footer>
+
 
