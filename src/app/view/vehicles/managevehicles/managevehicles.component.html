@@ -1,0 +1,88 @@
+<div class="page-header">
+  <div class="page-title">
+    <h4>Manage Vehicles</h4>
+    <h6>Add/Update Vehicles</h6>
+  </div>
+</div>
+
+<div class="card">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-lg-3 col-sm-6 col-12">
+          <div class="form-group">
+            <label class="required">Vehicle Name</label>
+            <input
+              type="text"
+              placeholder="Enter vehicle name"
+              formControlName="vehicle_name"
+              [ngClass]="{
+                  'is-invalid': f['vehicle_name']?.touched && f['vehicle_name']?.invalid
+                }"
+            />
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6 col-12">
+          <div class="form-group">
+            <label class="required">Vehicle Number</label>
+            <input type="text" formControlName="vehicle_number" class="form-control">
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6 col-12">
+          <div class="form-group">
+            <label class="required">Vehicle Type</label>
+            <mat-select class="select" placeholder="Select" formControlName="type" [(ngModel)]="selectedRole" (selectionChange)="onVehicleTypeChange($event)">
+              <mat-option [value]="'Three-Wheel'">Three-Wheel</mat-option>
+              <mat-option [value]="'Car'">Car</mat-option>
+              <mat-option [value]="'Van'">Van</mat-option>
+            </mat-select>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6 col-12">
+          <div class="form-group">
+            <label class="required">Vehicle Color</label>
+<!--            <input type="text" formControlName="color" class="form-control">-->
+            <input type="text" placeholder="Enter vehicle color" formControlName="color" class="form-control" />
+
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6 col-12">
+          <div class="form-group">
+            <label class="required">Vehicle Condition</label>
+<!--            <input type="text" formControlName="vehicle_conditions" class="form-control">-->
+            <input type="text" formControlName="vehicle_conditions" class="form-control" [ngClass]="{'is-invalid': f['vehicle_conditions'].touched && f['vehicle_conditions'].invalid}" />
+
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6 col-12">
+          <div class="form-group">
+            <label class="required">Vehicle Seats</label>
+            <input type="text" formControlName="seats" class="form-control">
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6 col-12">
+          <div class="form-group">
+            <label class="required">Driver Name</label>
+            <mat-select class="select" placeholder="Select Driver" formControlName="selectedDriver" (selectionChange)="onDriverChange($event)">
+              <mat-option *ngFor="let driver of drivers" [value]="driver.id">{{ driver.name }}</mat-option>
+            </mat-select>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-lg-12">
+        <button [disabled]="form.invalid" class="btn btn-submit mr-2" type="submit">Save</button>
+        <button type="button" class="btn btn-clear mr-2 ">Clear</button>
+        <a [routerLink]="routes.dashboard" class="btn btn-cancel">Cancel</a>
+      </div>
+
+    </div>
+  </form>
+</div>
