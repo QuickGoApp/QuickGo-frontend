@@ -9,8 +9,10 @@ import {map, Observable} from "rxjs";
 })
 export  class DriverService {
   private BASEURL:string;
+  private DRIVER:string;
   constructor(private http:HttpClient) {
     this.BASEURL = environment.baseURL;
+    this.DRIVER = environment.driverBaseURL;
   }
 
   public getVehicleTypes(): Observable<ApiResultFormatModel> {
@@ -28,8 +30,12 @@ export  class DriverService {
       })
     );
   }
-  getGeolocationDrivers(payload: any) {
+  getGeolocationDriverDetails(payload: any) {
     const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
-    return this.http.post<ApiResultFormatModel>(environment.baseURL + 'location/getGeolocationDrivers', payload, {headers});
+    return this.http.post<ApiResultFormatModel>(this.BASEURL + 'location/getGeolocationDrivers', payload, {headers});
+  }
+
+  getDriversAndLocation(payload: any) {
+    return this.http.post<ApiResultFormatModel>(this.DRIVER + 'drivers/search', payload);
   }
 }

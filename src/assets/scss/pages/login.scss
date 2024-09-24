@@ -56,7 +56,7 @@
                 img{
                     @include position($__absolute,16px,20px,null,null);
                 }
-                
+
             }
             input {
                 width: $__full__width;
@@ -219,6 +219,8 @@
     }
     .login-img {
         width: 60%;
+      padding-top: 100px;
+      //padding: 30px;
         @include respond-below(custom991) {
             display: $__none;
         }

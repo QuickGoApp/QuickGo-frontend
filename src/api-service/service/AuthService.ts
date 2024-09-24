@@ -14,7 +14,6 @@ export class AuthService {
   }
 
   signIn(payLoad: any) {
-    console.log('its here!!')
     console.log(payLoad)
     return this.http.post<any>(environment.baseURL +'auth/signin', payLoad);
   }
