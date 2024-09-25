@@ -219,8 +219,6 @@
     }
     .login-img {
         width: 60%;
-      padding-top: 100px;
-      //padding: 30px;
         @include respond-below(custom991) {
             display: $__none;
         }

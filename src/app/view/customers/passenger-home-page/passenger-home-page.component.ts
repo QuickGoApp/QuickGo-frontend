@@ -4,7 +4,9 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Loader} from '@googlemaps/js-api-loader';
 import {DriverService} from "../../../../api-service/service/DriverService";
 import Swal from "sweetalert2";
-import {ApiResultFormatModel} from "../../../../api-service/model/common/ApiResultFormatModel";  // Make sure this is from '@googlemaps/js-api-loader'
+import {ApiResultFormatModel} from "../../../../api-service/model/common/ApiResultFormatModel";
+import {TripService} from "../../../../api-service/service/TripService";
+import {el} from "@fullcalendar/core/internal-common";  // Make sure this is from '@googlemaps/js-api-loader'
 
 @Component({
   selector: 'app-home-page',
@@ -35,7 +37,7 @@ export class PassengerHomePageComponent implements OnInit {
 
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor(private driverService: DriverService) {
+  constructor(private driverService: DriverService,private tripService:TripService) {
     this.locationForm = new FormGroup({
       pickupLocation: new FormControl('', [Validators.required]),
       dropLocation: new FormControl('', [Validators.required]),
@@ -47,7 +49,7 @@ export class PassengerHomePageComponent implements OnInit {
         Validators.pattern('^\\+?\\d{10,15}$') // Example regex to validate phone numbers
       ])
     });
-    console.log(sessionStorage.getItem("userId"));
+
 
     this.loadSelectVehicleType();
   }
@@ -178,7 +180,7 @@ export class PassengerHomePageComponent implements OnInit {
     this.isLoader = true;
     setTimeout(() => {
       this.isLoader = false;
-    }, 5000); // 5 seconds
+    }, 3000); // 5 seconds
 
     // reload the map
     this.initializeGoogleMaps();
@@ -251,7 +253,8 @@ export class PassengerHomePageComponent implements OnInit {
             rate: vehicle.rate,               // Vehicle rate
             seats: vehicle.seats,             // Number of seats
             isFavorite: vehicle.favorite,   // Whether it's a favorite
-            userCode: vehicle.userCode
+            userCode: vehicle.userCode,
+            favoriteID:vehicle.favoriteID
           };
         });
 
@@ -340,15 +343,41 @@ export class PassengerHomePageComponent implements OnInit {
 
   // Toggle like/unlike for the heart button
   toggleLike(): void {
-    if (this.submittedCart) {
-      this.submittedCart.liked = !this.submittedCart.liked;
+    // Toggle the isFavorite status
+    this.submittedCart.isFavorite = !this.submittedCart.isFavorite;
 
-      if (this.submittedCart.liked) {
-        alert('Added to your favorite rider list');
-      } else {
-        alert('Removed from your favorite rider list');
-      }
+    // Get the favoriteID (if needed for further logic)
+    const favoriteID = this.submittedCart.favoriteID;
+    const driverCode = this.submittedCart.userCode;
+
+    const payload={
+      passengerCode:sessionStorage.getItem("userId"),
+      driverCode:driverCode
     }
+    this.tripService.saveFavoriteDriver(payload).subscribe((response: ApiResultFormatModel) => {
+      if (response.statusCode === 200) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Success',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }else {
+        Swal.fire({
+          title: 'warning!',
+          text: 'Cannot be add',
+          icon: 'warning',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+
+    // Display appropriate messages if needed (commented out in your example)
+    // if (this.submittedCart.isFavorite) {
+    //   alert(`Added to your favorite rider list. Favorite ID: ${driverCode}`);
+    // } else {
+    //   alert(`Removed from your favorite rider list. Favorite ID: ${driverCode}`);
+    // }
   }
 
 
@@ -477,6 +506,43 @@ export class PassengerHomePageComponent implements OnInit {
   }
 
   requestSend() {
-    console.log()
+    const {vehicleType, contactNumber,totalPrice,distanceKm} = this.locationForm.value;
+    console.log(this.submittedCart)
+
+    const payload = {
+      pickupLat: this.pickupLatLng.lat,
+      pickupLng: this.pickupLatLng.lng,
+      dropLat:this.dropLatLng.lat,
+      dropLng:this.dropLatLng.lng,
+      vehicleType: vehicleType,
+      contactNumber: contactNumber,
+      totalAmount: totalPrice,
+      paymentMethod:"CASH",
+      distanceKm: distanceKm,
+      driveCode:this.submittedCart.userCode,
+      passengerCode:sessionStorage.getItem("userId")
+    };
+    this.tripService.saveTripRequest(payload).subscribe(value => {
+      if (value.statusCode==200){
+        Swal.fire({
+          title: 'Send Request!',
+          text: 'Your request is send',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }else if(value.statusCode==429) {
+        Swal.fire({
+          title: 'warning!',
+          text: value.message,
+          icon: 'warning',
+        });
+      }else {
+        Swal.fire({
+          title: 'warning!',
+          text: 'Cannot be request send !.',
+          icon: 'error',
+        });
+      }
+    });
   }
 }

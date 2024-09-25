@@ -1,4 +1,5 @@
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCaKbVhcX_22R_pRKDYuNA7vox-PtGaDkI"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh4WBNFwhN5o3XuU4lLQ43sRLPGy0WSS0"></script>
+<!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCaKbVhcX_22R_pRKDYuNA7vox-PtGaDkI"></script>-->
 <nav class="navbar navbar-expand-lg navbar-light cartHeadersColor">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Quick Go</a>
@@ -37,28 +38,38 @@
           </div>
         </div>
       </div>
-      <!--     active vehicle card and form card ui-->
+      <!-- Notification Cards -->
       <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4">
         <div class="row">
           <div class="container mt-4">
-            <div class="row">
-              <div class="col-md-12">
-                <!-- Notification Card -->
-                <div class="card notification-card">
-                  <div class="card-body d-flex flex-row align-items-center">
-                    <!-- Notification Icon -->
-                    <div class="notification-icon">
-                      <img src="assets/img/icons/notification.png" alt="Notification" style="width:150px; height: 60px;"/>
-                    </div>
-                    <!-- Notification Message -->
-                    <div class="flex-grow-1 mx-3">
-                      <h6 class="notification-title mb-1">Ride Notification</h6>
-                      <p class="notification-message mb-0">you have a new ride. please accept or reject your ride.</p>
-                    </div>
-                    <!-- Action Buttons -->
-                    <div class="d-flex">
-                      <button class="btn btn-success mr-2">Accept</button>
-                      <button class="btn btn-danger">Cancel</button>
+            <!-- Notification Count Badge -->
+            <span
+              class="badge bg-danger position-absolute top-0 end-0 translate-middle badge-notification">{{ notifications.length }}</span>
+            <!-- Scrollable container for notifications -->
+            <div class="scrollable-notifications" style="max-height: 500px; overflow-y: auto;">
+              <!-- Iterate through the notifications array -->
+              <div class="row" *ngFor="let notification of notifications let i = index">
+                <div class="col-md-12">
+                  <!-- Notification Card -->
+                  <div class="card notification-card">
+                    <div class="card-body d-flex flex-row align-items-center">
+                      <!-- Notification Icon -->
+                      <div class="notification-icon position-relative">
+                        <img src="assets/img/icons/notification.png" alt="Notification"
+                             style="width: 100px; height: 60px;"/>
+                      </div>
+
+                      <!-- Notification Message -->
+                      <div class="flex-grow-1 mx-3">
+                        <h6 class="notification-title mb-1">{{ notification.title }}</h6>
+                        <p class="notification-message mb-0">{{ notification.message }}</p>
+                      </div>
+
+                      <!-- Action Buttons -->
+                      <div class="d-flex" *ngIf="notification.status === 'REQUEST'">
+                        <button class="btn btn-success mr-2" (click)="acceptNotification(i)">Accept</button>
+                        <button class="btn btn-danger" (click)="cancelNotification(i)">Cancel</button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -66,7 +77,6 @@
             </div>
           </div>
         </div>
-
       </div>
 
     </div>
