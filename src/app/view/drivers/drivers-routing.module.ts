@@ -14,9 +14,9 @@ const routes: Routes = [
           import('./adddriver/adddriver.module').then((m) => m.AdddriverModule),
       },
       {
-        path: 'update-driver',
+        path: 'update-profile',
         loadChildren: () =>
-          import('./updatedriver/updatedriver.module').then((m) => m.UpdatedriverModule),
+          import('./updateprofile/updateprofile.module').then((m) => m.UpdateprofileModule),
       }
     ],
   },

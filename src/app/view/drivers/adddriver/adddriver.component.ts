@@ -8,10 +8,8 @@ import {WebstorgeService} from "../../../shared/webstorge.service";
 import {AuthService} from "../../../../api-service/service/AuthService";
 import {userList} from "../../../shared/model/page.model";
 import {Sort} from "@angular/material/sort";
-import {UserService} from "../../../../api-service/service/UserService";
-import {PaginationService} from "../../../shared/custom-pagination/pagination.service";
-import {Router} from "@angular/router";
 import {DriverService} from "../../../../api-service/service/DriverService";
+import {RoleService} from "../../../../api-service/service/RoleService";
 interface data {
   value: string;
 }
@@ -22,7 +20,7 @@ interface data {
 })
 export class AdddriverComponent {
   public selectedValue1 = '';
-  existingUserId: number | null = null;  // Initially null when no user is being edited
+  existingUserId: number | null = null;
   selectedList1: data[] = [{ value: 'Disable' }, { value: 'Enable' }];
   password='password'
   show = false;
@@ -32,70 +30,50 @@ export class AdddriverComponent {
   public tableData = [];
   public searchDataValue = '';
   public routes = routes;
+  selectedRole: any;
+  roles: any[] = [];
   dataSource!: MatTableDataSource<userList>;
-  driverRoles: data[] = [
-    {value: 'USER'},
-    {value: 'MODERATOR'},
-    {value: 'ADMIN'},
-    {value: 'DOCTOR'},
-    {value: 'MANAGER'},
-    {value: 'MARKETING'},
-    {value: 'MARKETING_MANAGER'},
-    {value: 'ACCOUNTANT'},
-    {value: 'ACCOUNTANT_MANAGER'},
-    {value: 'PRODUCTION_MANAGER'},
-    {value: 'STORE_KEEPER'},
-    {value: 'SUPER_ADMIN'},
-  ];
 
   form = new FormGroup({
-    // Existing fields
     name: new FormControl('', [Validators.required]),
     username: new FormControl('', [Validators.required]),
     user_code: new FormControl('', [Validators.required]),
-    // vehicleName: new FormControl('', Validators.required),
-    // vehicleNumber: new FormControl('', Validators.required),
-    // vehicleConditions: new FormControl('', Validators.required),
-    // color: new FormControl('', Validators.required),
-    // seats: new FormControl('', Validators.required),
-    mobileNum: new FormControl('', [Validators.required, Validators.maxLength(10)]),
+    mobile_num: new FormControl('', [Validators.required, Validators.maxLength(10)]),
     email: new FormControl('', [Validators.required, Validators.email]),
     address: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
-    role: new FormControl([''], [Validators.required]), // Ensure the role is set to 'ROLE_DRIVER'
+    selectedRole: new FormControl(''),
   });
-  ROLE_DRIVER?: string="ROLE_DRIVER";
-  ROLE_ADMIN?: string="ROLE_ADMIN";
-  ROLE_TRAINER?: string="trainer";
-
-  roles: string[] = [];
-
-  selectedRole: string;
 
   onRoleChange(event: any) {
-    const selectedRole = event.value;
-    // Clear the array and push the selected role into it
-    this.roles = [];
-    this.roles.push(selectedRole); // Add the selected role
-
-    // Update the form control to reflect the array
-    this.form.patchValue({ role: this.roles });
+    this.selectedRole = event.value;
   }
 
   constructor(private storage: WebstorgeService, private authService: AuthService,
-              private driverService:DriverService) {
-
+              private driverService:DriverService,private roleService: RoleService) {
   }
 
   ngOnInit(): void {
     this.loadDrivers();
+    this.loadRoles();
+  }
+
+  loadRoles() {
+    this.roleService.getAllRollList().subscribe(
+      (response: any) => {
+        this.roles = response.data;
+      },
+      (error) => {
+        console.error('Error fetching roles:', error);
+      }
+    );
   }
 
   //Function to load drivers
   loadDrivers() {
     this.driverService.getDrivers().subscribe(
       (response: any) => {
-        this.tableData = response;  // No need to parse if already an object
+        this.tableData = response;
       },
       (error) => {
         console.error('Error loading drivers:', error);
@@ -103,13 +81,6 @@ export class AdddriverComponent {
       }
     );
   }
-
-  // constructor(
-  //
-  //   private sweetalert: SweetalertService,
-  // ) {
-  //
-  // }
 
   get f() {
     return this.form.controls;
@@ -119,7 +90,6 @@ export class AdddriverComponent {
   }
 
   deleteBtn(userId: number) {
-    // Confirm deletion with SweetAlert before proceeding
     Swal.fire({
       title: 'Are you sure?',
       text: 'You will not be able to recover this driver!',
@@ -133,22 +103,17 @@ export class AdddriverComponent {
         // Call the service to delete the user
         this.driverService.deleteUser(userId).subscribe(
           () => {
-            Swal.fire('Deleted!', 'The driver has been deleted.', 'success');
-            this.loadDrivers();  // Refresh the driver list after deletion
+            Swal.fire('Deleted!', 'User Deleted Successfully.', 'success');
+            this.loadDrivers();
           },
           error => {
             console.error('Error deleting user:', error);
-            Swal.fire('Error', 'Failed to delete the driver.', 'error');
+            Swal.fire('Error', 'Failed to delete the user.', 'error');
           }
         );
       }
     });
   }
-
-
-
-
-
 
   date = new Date();
 
@@ -163,11 +128,8 @@ export class AdddriverComponent {
     if (!sort.active || sort.direction === '') {
       this.tableData = data;
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.tableData = data.sort((a: any, b: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const aValue = (a as any)[sort.active];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const bValue = (b as any)[sort.active];
         return (aValue < bValue ? -1 : 1) * (sort.direction === 'asc' ? 1 : -1);
       });
@@ -186,7 +148,6 @@ export class AdddriverComponent {
     }
   }
 
-
   onClick() {
     if (this.password === 'password') {
       this.password = 'text';
@@ -198,16 +159,15 @@ export class AdddriverComponent {
   }
 
   onUpdate(users: any) {
-    this.form.patchValue({
+    const selectedRole = this.roles.find(role => role.value === users.role_id);    this.form.patchValue({
       name: users.name || '',
       user_code: users.user_code || '',
       username: users.username || '',
       password:  users.password,
-      mobileNum: users.mobile_num || '',
+      mobile_num: users.mobile_num || '',
       email: users.email || '',
       address: users.address || '',
-      role: users.role || ''
-
+      selectedRole: selectedRole ? selectedRole.value : null,
     });
     this.existingUserId = users.id;
   }
@@ -222,12 +182,12 @@ export class AdddriverComponent {
         this.authService.addUser(userData).subscribe(
           data => {
             console.log('User added successfully', data);
-            Swal.fire('Success', 'Driver added successfully!', 'success');
-            this.loadDrivers();  // Refresh the drivers list after adding a new user
+            Swal.fire('Success', 'User added successfully!', 'success');
+            this.loadDrivers();
           },
           error => {
             console.error('Error:', error);
-            Swal.fire('Error', 'Failed to save driver', 'error');
+            Swal.fire('Error', 'Failed to save user', 'error');
           }
         );
       }
