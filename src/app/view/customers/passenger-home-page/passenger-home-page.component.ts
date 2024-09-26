@@ -25,6 +25,7 @@ export class PassengerHomePageComponent implements OnInit {
   private activeVehicleLocations = [];
   private pickupLatLng = {lat: null, lng: null};
   private dropLatLng = {lat: null, lng: null};
+  public isFriendSelected = false; // To track if "To Friend" is selected
 
   private map!: google.maps.Map;
   private directionsService!: google.maps.DirectionsService;
@@ -47,7 +48,12 @@ export class PassengerHomePageComponent implements OnInit {
       contactNumber: new FormControl('', [
         Validators.required,
         Validators.pattern('^\\+?\\d{10,15}$') // Example regex to validate phone numbers
-      ])
+      ]),
+      friendContact: new FormControl('', [
+        Validators.required,
+        Validators.pattern('^\\+?\\d{10,15}$') // Example regex to validate phone numbers
+      ]),
+      rideType: new FormControl('self'),
     });
 
 
@@ -56,6 +62,27 @@ export class PassengerHomePageComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeGoogleMaps();
+  }
+
+  initAutocomplete(type: string): void {
+    const input = document.getElementById(type === 'pickup' ? 'pickupLocation' : 'dropLocation') as HTMLInputElement;
+
+    const autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.setFields(['place_id', 'name']); // Specify fields to retrieve
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (place && place.name) {
+        this.locationForm.patchValue({
+          [type === 'pickup' ? 'pickupLocation' : 'dropLocation']: place.name
+        });
+      }
+    });
+  }
+
+  onRideTypeChange(): void {
+    // Update the visibility based on selected radio button
+    this.isFriendSelected = this.locationForm.get('rideType')?.value === 'friend';
   }
 
   // form vehicles load
@@ -506,7 +533,7 @@ export class PassengerHomePageComponent implements OnInit {
   }
 
   requestSend() {
-    const {vehicleType, contactNumber,totalPrice,distanceKm} = this.locationForm.value;
+    const {vehicleType, contactNumber,friendContact,totalPrice,distanceKm} = this.locationForm.value;
     console.log(this.submittedCart)
 
     const payload = {
@@ -516,6 +543,7 @@ export class PassengerHomePageComponent implements OnInit {
       dropLng:this.dropLatLng.lng,
       vehicleType: vehicleType,
       contactNumber: contactNumber,
+      friendContact:friendContact,
       totalAmount: totalPrice,
       paymentMethod:"CASH",
       distanceKm: distanceKm,

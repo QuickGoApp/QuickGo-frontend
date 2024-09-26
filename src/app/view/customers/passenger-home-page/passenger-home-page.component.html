@@ -104,7 +104,15 @@
                   <div class="mb-3">
                     <label for="pickupLocation" class="form-label">Pickup Location</label>
                     <div class="input-group">
-                      <input type="text" id="pickupLocation" class="form-control" formControlName="pickupLocation">
+<!--                      <input type="text" id="pickupLocation" class="form-control" formControlName="pickupLocation">-->
+                        <input
+                          type="text"
+                          id="pickupLocation"
+                          class="form-control"
+                          formControlName="pickupLocation"
+                          placeholder="Enter Pickup Location"
+                          (focus)="initAutocomplete('pickup')">
+
                       <button type="button" class="btn btn-outline-secondary" (click)="setCurrentLocation()">
                         <i class="fa fa-map-marker-alt"></i> <!-- Location icon -->
                       </button>
@@ -119,17 +127,53 @@
                   <!-- Drop Location Input -->
                   <div class="mb-3">
                     <label for="dropLocation" class="form-label">Drop Location</label>
-                    <input type="text" id="dropLocation" class="form-control" formControlName="dropLocation">
+<!--                    <input type="text" id="dropLocation" class="form-control" formControlName="dropLocation">-->
+                    <input
+                      type="text"
+                      id="dropLocation"
+                      class="form-control"
+                      formControlName="dropLocation"
+                      placeholder="Enter Drop Location"
+                      (focus)="initAutocomplete('drop')">
                     <div *ngIf="locationForm.get('dropLocation')?.invalid && locationForm.get('dropLocation')?.touched"
                          class="text-danger">
                       Drop location is required
                     </div>
                   </div>
 
+<!--                  radio buttons select-->
+                  <div class="mt-3">
+                    <label>
+                      <input
+                        type="radio"
+                        formControlName="rideType"
+                        value="self"
+                        (change)="onRideTypeChange()">
+                      To Self
+                    </label>
+                    <label class="ml-3">
+                      <input
+                        type="radio"
+                        formControlName="rideType"
+                        value="friend"
+                        (change)="onRideTypeChange()">
+                      To Friend
+                    </label>
+                  </div>
+<!--                  friend contact number input-->
+                  <div *ngIf="isFriendSelected" class="mt-3">
+                    <label for="friendContact">Friend's Contact Number:</label>
+                    <input
+                      type="text"
+                      id="friendContact"
+                      class="form-control"
+                      formControlName="friendContact"
+                      placeholder="Enter Friend's Contact Number">
+                  </div>
                   <!-- Contact Number Input -->
                   <div class="mb-3">
                     <label for="contactNumber" class="form-label">Contact Number</label>
-                    <input type="text" id="contactNumber" class="form-control" formControlName="contactNumber">
+                    <input type="text" id="contactNumber" class="form-control" formControlName="contactNumber" placeholder="Enter Your Contact Number" >
                     <div
                       *ngIf="locationForm.get('contactNumber')?.invalid && locationForm.get('contactNumber')?.touched"
                       class="text-danger">

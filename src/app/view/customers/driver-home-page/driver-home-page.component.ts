@@ -10,9 +10,11 @@ import Swal from "sweetalert2";
   templateUrl: './driver-home-page.component.html',
   styleUrls: ['./driver-home-page.component.scss']
 })
-export class DriverHomePageComponent implements OnInit{
+export class DriverHomePageComponent implements OnInit {
 
   protected readonly routes = routes;
+  public totalPrice;
+  public isNotification = true;
 
   private map!: google.maps.Map;
   private directionsService!: google.maps.DirectionsService;
@@ -20,8 +22,9 @@ export class DriverHomePageComponent implements OnInit{
   private geocoder!: google.maps.Geocoder;
 
   notifications: any[] = [];
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor(private tripService:TripService) {
+  constructor(private tripService: TripService) {
   }
 
   ngOnInit(): void {
@@ -79,9 +82,9 @@ export class DriverHomePageComponent implements OnInit{
     });
   }
 
-  loadNotification(){
-    const payload={
-      driverCode:sessionStorage.getItem("userId"),
+  loadNotification() {
+    const payload = {
+      driverCode: sessionStorage.getItem("userId"),
     }
     this.tripService.getDriverTrip(payload).subscribe((response: ApiResultFormatModel) => {
       if (response.statusCode === 200) {
@@ -105,7 +108,7 @@ export class DriverHomePageComponent implements OnInit{
           title: 'New Ride Notification',  // Custom hardcoded title
           message: 'A new ride request from Passenger ',
         }));
-      }else {
+      } else {
         Swal.fire({
           title: 'Error!',
           text: 'Something went wrong',
@@ -118,6 +121,7 @@ export class DriverHomePageComponent implements OnInit{
 
 
   public acceptNotification(index: number) {
+    this.isNotification = false;
     console.log('Notification accepted:', this.notifications[index]);
     const notification = this.notifications[index];
 
@@ -128,8 +132,8 @@ export class DriverHomePageComponent implements OnInit{
     const dropLng = notification.dropLng;
 
     // Center the map on the pickup location
-    const pickupLocation = { lat: pickupLat, lng: pickupLng };
-    const dropLocation = { lat: dropLat, lng: dropLng };
+    const pickupLocation = {lat: pickupLat, lng: pickupLng};
+    const dropLocation = {lat: dropLat, lng: dropLng};
 
     // Request directions from the pickup to drop-off
     const directionsRequest = {
@@ -151,9 +155,40 @@ export class DriverHomePageComponent implements OnInit{
         });
       }
     });
+
+    this.totalPrice = notification.totalPrice.toFixed(2);
   }
+
+
   public cancelNotification(index: number) {
     console.log('Notification cancelled:', this.notifications[index]);
     // Handle cancel logic here
   }
+
+  public stopTrip() {
+    this.isNotification = true;
+
+    this.loadNotification();
+
+    console.log('Trip stopped:', this.notifications[1]);
+
+    const notification = this.notifications[1];
+
+    // Assuming there's a backend call to stop the trip or handle the logic
+    // For demonstration purposes, we'll just set the status to 'COMPLETED' locally
+
+    notification.status = 'COMPLETED'; // You might also update the backend here
+
+    // You can display a message or alert to the user about the trip status
+    Swal.fire({
+      title: 'Trip Stopped',
+      text: 'The trip has been successfully stopped.',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    });
+
+
+  }
+
+
 }
