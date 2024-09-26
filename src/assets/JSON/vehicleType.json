@@ -1,0 +1,21 @@
+{
+  "statusCode": 200,
+  "message": "success",
+  "data": [
+    {
+      "type": "three_wheel",
+      "name":"Three-Wheel",
+      "imageUrl": "https://www.riyasakwala.lk/public/images/vehicle_type/ad_default/three-wheelers.jpg"
+    },
+    {
+      "type": "car",
+      "name": "Car",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdQvaj4xjLm09WZ2ynHKU--bLrBE4gQ3dlUQ&s"
+    },
+    {
+      "type": "bike",
+      "name": "Bike",
+      "imageUrl": "https://static.vecteezy.com/system/resources/previews/045/892/561/non_2x/motorbike-icon-symbols-illustration-vector.jpg"
+    }
+  ]
+}

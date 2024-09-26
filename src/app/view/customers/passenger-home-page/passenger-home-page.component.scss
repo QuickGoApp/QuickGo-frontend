@@ -13,10 +13,13 @@
   flex-direction: column;
   align-items: center;
   cursor: pointer;
+  width: 200px;
+  height: 100px;
 }
 
 .vehicle-btn:hover {
   border-color: #06325d;
+
 }
 
 .vehicle-image {
@@ -85,7 +88,7 @@
 }
 
 .vehicle-btn:hover {
-  border-color: #007bff;
+  border-color: #ff1919;
 }
 
 .vehicle-image {
@@ -100,7 +103,43 @@
 
 /* Yellow border and background for selected vehicle */
 .btn-selected {
-  border-color: yellow;
-  background-color: #fff3cd;
+  border-color: #ff8c19;
+  background-color: #06325d;
+  color:#ffe09e !important;;
 }
 
+.cartHeadersColor{
+  background-color: #ffbb0d!important;;
+}
+.cartColor{
+  background-color: #ffcd6d!important;
+}
+.cartBodyColor{
+  background-color: #ffe3af !important;
+
+}
+
+
+//======== loader ===========
+
+.loader {
+  border: 16px solid #f38a00;
+  border-radius: 50%;
+  border-top: 16px solid #ffbb0d;
+  border-right: 16px solid #d9ceaa;
+  border-bottom: 16px solid #f39821;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

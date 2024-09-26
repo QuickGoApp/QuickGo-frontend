@@ -1,0 +1,159 @@
+import {Component, OnInit} from '@angular/core';
+import {routes} from "../../../core/routes-path/routes";
+import {Loader} from "@googlemaps/js-api-loader";
+import {TripService} from "../../../../api-service/service/TripService";
+import {ApiResultFormatModel} from "../../../../api-service/model/common/ApiResultFormatModel";
+import Swal from "sweetalert2";
+
+@Component({
+  selector: 'app-driver-home-page',
+  templateUrl: './driver-home-page.component.html',
+  styleUrls: ['./driver-home-page.component.scss']
+})
+export class DriverHomePageComponent implements OnInit{
+
+  protected readonly routes = routes;
+
+  private map!: google.maps.Map;
+  private directionsService!: google.maps.DirectionsService;
+  private directionsRenderer!: google.maps.DirectionsRenderer;
+  private geocoder!: google.maps.Geocoder;
+
+  notifications: any[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  constructor(private tripService:TripService) {
+  }
+
+  ngOnInit(): void {
+    this.initializeGoogleMaps();
+    this.loadNotification();
+  }
+
+  private initializeGoogleMaps() {
+
+    const loader = new Loader({
+      // apiKey: 'AIzaSyCaKbVhcX_22R_pRKDYuNA7vox-PtGaDkI',
+      apiKey: 'AIzaSyCh4WBNFwhN5o3XuU4lLQ43sRLPGy0WSS0',
+      version: 'weekly',
+      libraries: ['places']
+    });
+
+    loader.load().then(() => {
+      this.map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
+        center: {lat: 7.8731, lng: 80.7718},
+        zoom: 11
+      });
+
+      // Get the current location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const currentLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          // Center the map on the current location
+          this.map.setCenter(currentLocation);
+
+          // Place a marker on the current location
+          new google.maps.Marker({
+            position: currentLocation,
+            map: this.map,
+            title: "You are here"
+          });
+        }, () => {
+          // Handle location error
+          console.error('Error getting location');
+        });
+      } else {
+        console.error('Geolocation is not supported by this browser.');
+      }
+
+      this.directionsService = new google.maps.DirectionsService();
+      this.directionsRenderer = new google.maps.DirectionsRenderer();
+      this.directionsRenderer.setMap(this.map);
+
+      this.geocoder = new google.maps.Geocoder();
+    }).catch(error => {
+      console.error('Error loading Google Maps:', error);
+    });
+  }
+
+  loadNotification(){
+    const payload={
+      driverCode:sessionStorage.getItem("userId"),
+    }
+    this.tripService.getDriverTrip(payload).subscribe((response: ApiResultFormatModel) => {
+      if (response.statusCode === 200) {
+        // Map the response data to notifications array
+        this.notifications = response.data.map((trip: any) => ({
+          tripID: trip.tripID,
+          passengerCode: trip.passengerCode,
+          driveCode: trip.driveCode,
+          totalAmount: trip.totalAmount,
+          paymentMethod: trip.paymentMethod,
+          status: trip.status,
+          driverComment: trip.driverComment,
+          pickupLat: trip.pickupLat,
+          pickupLng: trip.pickupLng,
+          dropLat: trip.dropLat,
+          dropLng: trip.dropLng,
+          passengerComment: trip.passengerComment,
+          createDateTime: trip.createDateTime,
+          updateDateTime: trip.updateDateTime,
+          isActive: trip.isActive,
+          title: 'New Ride Notification',  // Custom hardcoded title
+          message: 'A new ride request from Passenger ',
+        }));
+      }else {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Something went wrong',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+  }
+
+
+  public acceptNotification(index: number) {
+    console.log('Notification accepted:', this.notifications[index]);
+    const notification = this.notifications[index];
+
+    // Get the pickup and drop-off coordinates from the notification
+    const pickupLat = notification.pickupLat;
+    const pickupLng = notification.pickupLng;
+    const dropLat = notification.dropLat;
+    const dropLng = notification.dropLng;
+
+    // Center the map on the pickup location
+    const pickupLocation = { lat: pickupLat, lng: pickupLng };
+    const dropLocation = { lat: dropLat, lng: dropLng };
+
+    // Request directions from the pickup to drop-off
+    const directionsRequest = {
+      origin: pickupLocation,
+      destination: dropLocation,
+      travelMode: google.maps.TravelMode.DRIVING
+    };
+
+    this.directionsService.route(directionsRequest, (result, status) => {
+      if (status === google.maps.DirectionsStatus.OK) {
+        this.directionsRenderer.setDirections(result);
+      } else {
+        console.error('Directions request failed due to ' + status);
+        Swal.fire({
+          title: 'Error!',
+          text: 'Could not get directions. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+  }
+  public cancelNotification(index: number) {
+    console.log('Notification cancelled:', this.notifications[index]);
+    // Handle cancel logic here
+  }
+}

@@ -5,7 +5,7 @@ const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'home',
+    redirectTo: 'signin',
   },
   // {
   //   path: '',
@@ -23,12 +23,13 @@ const routes: Routes = [
   },
   {
     path: '',
-    loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
+    loadChildren: () => import('./view/customers/customers.module').then((m) => m.CustomersModule),
   },
   {
-    path: 'home',
-    loadChildren: () => import('./view/customers/home-page/home-page.module').then((m) => m.HomePageModule),
-  }
+    path: '',
+    loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
+  },
+
   // {
   //   path: '**',
   //   redirectTo: 'errorpages/error404',

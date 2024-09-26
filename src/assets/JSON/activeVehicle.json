@@ -1,0 +1,42 @@
+{
+  "statusCode": 200,
+  "message": "success",
+  "data": [
+    {
+      "coordinates": { "lat": 6.873683, "lng": 79.958035 },
+      "name": "ms.nimal",
+      "type": "car",
+      "icon": "assets/img/vehicle/caricon.png",
+      "image": "https://png.pngtree.com/png-vector/20230206/ourmid/pngtree-yellow-car-side-view-vector-illustration-in-trendy-flat-style-isolated-png-image_6585619.png",
+      "vehicleNumber": "ABC123",
+      "color": "red",
+      "rate":3.5,
+      "seats":3,
+      "isFavorite": false
+    },
+    {
+      "coordinates": { "lat": 6.911522, "lng": 79.867240 },
+      "name": "Ms.Siripala",
+      "type": "bicycle",
+      "icon": "assets/img/vehicle/bicicon.png",
+      "image": "https://www.lendingexpert.co.uk/wp-content/uploads/2018/10/Motorbike-finance-guide-and-information.jpg",
+      "vehicleNumber": "ABC123",
+      "color": "green",
+      "rate":5,
+      "seats":3,
+      "isFavorite": true
+    },
+    {
+      "coordinates": { "lat": 6.845000, "lng": 79.935457 },
+      "name": "ms.Keshan",
+      "type": "Three wheel",
+      "icon": "assets/img/vehicle/tuckicon.png",
+      "image": "https://www.shutterstock.com/image-illustration/auto-rickshaw-bajaj-tuktuk-3d-260nw-2187568303.jpg",
+      "vehicleNumber": "ABC123",
+      "color": "blue",
+      "rate":5,
+      "seats":3,
+      "isFavorite": true
+    }
+  ]
+}
