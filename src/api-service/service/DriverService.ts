@@ -37,25 +37,25 @@ export  class DriverService {
   }
 
   getDriversAndLocation(payload: any) {
-    return this.http.post<ApiResultFormatModel>(this.DRIVER + 'drivers/search', payload);
+    return this.http.post<ApiResultFormatModel>(this.DRIVER + 'driver/search', payload);
   }
 
   getDrivers(): Observable<any[]> {
     const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
-    return this.http.get<any[]>(this.BASEURL + 'auth/driver/drivers', { headers });
+    return this.http.get<any[]>(this.BASEURL + 'driver/drivers', { headers });
   }
 
   updateUser(existUserId: number, userData: any) {
     const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
     console.log('Sending PUT request to:', `${this.BASEURL}+'auth/drivers/'+${existUserId}`);
     console.log('Payload:', userData);
-    return this.http.put<any>(this.BASEURL+'auth/driver/updateDriver/'+existUserId, userData, { headers });
+    return this.http.put<any>(this.BASEURL+'driver/updateDriver/'+existUserId, userData, { headers });
 
   }
 
   deleteUser(userId: number) {
     const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
-    return this.http.delete(this.BASEURL+'auth/driver/deleteDriver/'+userId, { headers });
+    return this.http.delete(this.BASEURL+'driver/deleteDriver/'+userId, { headers });
   }
 
 }

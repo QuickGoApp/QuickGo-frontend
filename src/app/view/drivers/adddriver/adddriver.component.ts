@@ -10,6 +10,9 @@ import {userList} from "../../../shared/model/page.model";
 import {Sort} from "@angular/material/sort";
 import {DriverService} from "../../../../api-service/service/DriverService";
 import {RoleService} from "../../../../api-service/service/RoleService";
+import html2canvas from "html2canvas";
+import jsPDF from 'jspdf';
+
 interface data {
   value: string;
 }
@@ -193,6 +196,7 @@ export class AdddriverComponent {
       }
     } else {
       this.form.markAllAsTouched();
+      Swal.fire('Error', 'Please input required fields !', 'error');
     }
   }
 
@@ -211,5 +215,23 @@ export class AdddriverComponent {
     } else {
       this.form.markAllAsTouched();
     }
+  }
+
+  generatePDF() {
+    const data = document.getElementById('tableContent');
+
+    html2canvas(data!).then(canvas => {
+      const imgWidth = 208;
+      const pageHeight = 295;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      const heightLeft = imgHeight;
+
+      const contentDataURL = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4'); // A4 size page of PDF
+      const position = 0;
+
+      pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
+      pdf.save('table-data.pdf'); // Generated PDF will be saved here
+    });
   }
 }

@@ -229,7 +229,7 @@
     </div>
     <!-- /Filter -->
     <div class="table-responsive">
-      <table
+      <table  id="tableContent"
         (matSortChange)="sortData($event)"
         matSort
         matSortActive="Sno"
@@ -306,6 +306,7 @@
         </tr>
         </tbody>
       </table>
+      <button (click)="generatePDF()">Download PDF</button>
 
       <app-custom-pagination></app-custom-pagination>
     </div>
