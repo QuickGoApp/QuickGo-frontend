@@ -33,8 +33,9 @@ export class AdduserComponent {
 
   form = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
+    username: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
-    username: new FormControl(''),
+    address: new FormControl('', [Validators.required]),
     clientId: new FormControl(''),
     apiKey: new FormControl(''),
     name: new FormControl('', [Validators.required]),
@@ -43,8 +44,24 @@ export class AdduserComponent {
     mobileNum: new FormControl('', [Validators.required,Validators.maxLength(10)]),
     role: new FormControl([''], [Validators.required]),
   });
-  ROLE_ADMIN?: string="admin";
-  ROLE_TRAINER?: string="trainer";
+  ROLE_ADMIN?: string="ROLE_ADMIN";
+  ROLE_DRIVER?: string="ROLE_DRIVER";
+
+  roles: string[] = [];
+
+  selectedRole: string;
+
+  onRoleChange(event: any) {
+    const selectedRole = event.value;
+    console.log("Selected Role:", selectedRole);
+
+    // Clear the array and push the selected role into it
+    this.roles = [];
+    this.roles.push(selectedRole); // Add the selected role
+
+    // Update the form control to reflect the array
+    this.form.patchValue({ role: this.roles });
+  }
 
   constructor(private storage: WebstorgeService, private authService: AuthService) {
   }
@@ -64,8 +81,6 @@ export class AdduserComponent {
   }
 
   onSubmit() {
-    console.log('user form')
-    console.log(this.form.value)
     if (this.form.valid) {
       this.form.value.username = this.form.value.email
       this.authService.addUser(this.form.value).subscribe(
@@ -76,7 +91,6 @@ export class AdduserComponent {
             'User Save Success!',
             'success'
           )
-          // this.storage.submit();
         },
         error => {
           console.log(error)

@@ -70,6 +70,21 @@ export class routes {
 
 
 
+  public static get driver(): string {
+    return this.core + '/driver';
+  }
+
+  public static get addDriver(): string {
+    return this.driver + '/add-driver';
+  }
+
+  public static get updateDriver(): string {
+    return this.driver + '/update-driver';
+  }
+
+
+
+
 
 
 }
