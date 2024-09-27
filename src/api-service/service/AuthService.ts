@@ -27,4 +27,5 @@ export class AuthService {
     const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
     return this.http.post<ApiResultFormatModel>(this.SERVER+'auth/signup', payload, { headers });
   }
+
 }

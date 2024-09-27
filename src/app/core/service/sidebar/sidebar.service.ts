@@ -159,6 +159,23 @@ export class SidebarService {
         },
       ],
     },
+    {
+      tittle: 'Manage Drivers',
+      showAsTab: true,
+      separateRoute: false,
+      menu: [
+        {
+          menuValue: 'Add Driver',
+          route: routes.addDriver,
+          hasSubRoute: false,
+          showSubRoute: false,
+          icon: 'bar-chart-2',
+          subMenus: [],
+        },
+
+
+      ],
+    },
 
   ];
 

@@ -25,9 +25,15 @@
         <div class="col-lg-3 col-sm-6 col-12">
           <div class="form-group">
             <label class="required">User Name</label>
-            <input type="text" formControlName="userName" class="form-control">
+            <input type="text" formControlName="username" class="form-control">
           </div>
         </div>
+<!--        <div class="col-lg-3 col-sm-6 col-12">-->
+<!--          <div class="form-group">-->
+<!--            <label class="required">User Code</label>-->
+<!--            <input type="text" formControlName="user_code" class="form-control">-->
+<!--          </div>-->
+<!--        </div>-->
         <div class="col-lg-3 col-sm-6 col-12">
           <div class="form-group">
             <label  class="required">Contact No.</label>
@@ -84,14 +90,16 @@
         <div class="col-lg-3 col-sm-6 col-12">
           <div class="form-group">
             <label  class="required">Role</label>
-              <mat-select class="select" placeholder="Select" >
-                <mat-option  [value]="ROLE_ADMIN">ROLE_ADMIN</mat-option>
-                <mat-option  [value]="ROLE_TRAINER">ROLE_TRAINER</mat-option>
+<!--              <mat-select class="select" placeholder="Select" >-->
+            <mat-select class="select" placeholder="Select" [(ngModel)]="selectedRole" (selectionChange)="onRoleChange($event)" formControlName="role">
+            <mat-option  [value]="ROLE_ADMIN">ROLE_ADMIN</mat-option>
+<!--                <mat-option  [value]="ROLE_TRAINER">ROLE_TRAINER</mat-option>-->
+                <mat-option  [value]="ROLE_DRIVER">ROLE_DRIVER</mat-option>
               </mat-select>
 
           </div>
         </div>
-        <div class="col-lg-9 col-12">
+        <div class="col-lg-3 col-sm-6 col-12">
           <div class="form-group">
             <label  class="required">Address</label>
             <input type="text" formControlName="address" class="form-control">
