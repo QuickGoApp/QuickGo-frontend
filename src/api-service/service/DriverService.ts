@@ -38,4 +38,9 @@ export  class DriverService {
   getDriversAndLocation(payload: any) {
     return this.http.post<ApiResultFormatModel>(this.DRIVER + 'drivers/search', payload);
   }
+
+ saveDriverGeoLocation(payload: any) {
+    return this.http.post<ApiResultFormatModel>(this.DRIVER + 'drivers/location', payload);
+  }
+
 }

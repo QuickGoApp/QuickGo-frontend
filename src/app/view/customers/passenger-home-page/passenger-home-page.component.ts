@@ -22,6 +22,7 @@ export class PassengerHomePageComponent implements OnInit {
 
   public vehicleTypes = [];
   public isLoader = false;
+  public isCancel = false;
   private activeVehicleLocations = [];
   private pickupLatLng = {lat: null, lng: null};
   private dropLatLng = {lat: null, lng: null};
@@ -38,7 +39,7 @@ export class PassengerHomePageComponent implements OnInit {
 
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor(private driverService: DriverService,private tripService:TripService) {
+  constructor(private driverService: DriverService, private tripService: TripService) {
     this.locationForm = new FormGroup({
       pickupLocation: new FormControl('', [Validators.required]),
       dropLocation: new FormControl('', [Validators.required]),
@@ -50,7 +51,6 @@ export class PassengerHomePageComponent implements OnInit {
         Validators.pattern('^\\+?\\d{10,15}$') // Example regex to validate phone numbers
       ]),
       friendContact: new FormControl('', [
-        Validators.required,
         Validators.pattern('^\\+?\\d{10,15}$') // Example regex to validate phone numbers
       ]),
       rideType: new FormControl('self'),
@@ -222,7 +222,7 @@ export class PassengerHomePageComponent implements OnInit {
       // Call the recursive function to get drivers and their location
       //this.driversAndLocation();
 
-        this.driverAndLocationDetails();
+      this.driverAndLocationDetails();
 
 
     } else {
@@ -255,7 +255,7 @@ export class PassengerHomePageComponent implements OnInit {
     });
   }
 
-  driverAndLocationDetails(){
+  driverAndLocationDetails() {
     const {vehicleType, contactNumber} = this.locationForm.value;
 
     //getGeolocationDrivers
@@ -281,7 +281,7 @@ export class PassengerHomePageComponent implements OnInit {
             seats: vehicle.seats,             // Number of seats
             isFavorite: vehicle.favorite,   // Whether it's a favorite
             userCode: vehicle.userCode,
-            favoriteID:vehicle.favoriteID
+            favoriteID: vehicle.favoriteID
           };
         });
 
@@ -377,9 +377,9 @@ export class PassengerHomePageComponent implements OnInit {
     const favoriteID = this.submittedCart.favoriteID;
     const driverCode = this.submittedCart.userCode;
 
-    const payload={
-      passengerCode:sessionStorage.getItem("userId"),
-      driverCode:driverCode
+    const payload = {
+      passengerCode: sessionStorage.getItem("userId"),
+      driverCode: driverCode
     }
     this.tripService.saveFavoriteDriver(payload).subscribe((response: ApiResultFormatModel) => {
       if (response.statusCode === 200) {
@@ -389,7 +389,7 @@ export class PassengerHomePageComponent implements OnInit {
           icon: 'success',
           confirmButtonText: 'OK'
         });
-      }else {
+      } else {
         Swal.fire({
           title: 'warning!',
           text: 'Cannot be add',
@@ -399,12 +399,6 @@ export class PassengerHomePageComponent implements OnInit {
       }
     });
 
-    // Display appropriate messages if needed (commented out in your example)
-    // if (this.submittedCart.isFavorite) {
-    //   alert(`Added to your favorite rider list. Favorite ID: ${driverCode}`);
-    // } else {
-    //   alert(`Removed from your favorite rider list. Favorite ID: ${driverCode}`);
-    // }
   }
 
 
@@ -533,41 +527,67 @@ export class PassengerHomePageComponent implements OnInit {
   }
 
   requestSend() {
-    const {vehicleType, contactNumber,friendContact,totalPrice,distanceKm} = this.locationForm.value;
+    const {vehicleType, contactNumber, friendContact, totalPrice, distanceKm} = this.locationForm.value;
     console.log(this.submittedCart)
 
     const payload = {
       pickupLat: this.pickupLatLng.lat,
       pickupLng: this.pickupLatLng.lng,
-      dropLat:this.dropLatLng.lat,
-      dropLng:this.dropLatLng.lng,
+      dropLat: this.dropLatLng.lat,
+      dropLng: this.dropLatLng.lng,
       vehicleType: vehicleType,
       contactNumber: contactNumber,
-      friendContact:friendContact,
+      friendContact: friendContact,
       totalAmount: totalPrice,
-      paymentMethod:"CASH",
+      paymentMethod: "CASH",
       distanceKm: distanceKm,
-      driveCode:this.submittedCart.userCode,
-      passengerCode:sessionStorage.getItem("userId")
+      driveCode: this.submittedCart.userCode,
+      passengerCode: sessionStorage.getItem("userId")
     };
     this.tripService.saveTripRequest(payload).subscribe(value => {
-      if (value.statusCode==200){
+      if (value.statusCode == 200) {
         Swal.fire({
           title: 'Send Request!',
           text: 'Your request is send',
           icon: 'success',
           confirmButtonText: 'OK'
         });
-      }else if(value.statusCode==429) {
+        this.isCancel = true;
+      } else if (value.statusCode == 429) {
         Swal.fire({
           title: 'warning!',
           text: value.message,
           icon: 'warning',
         });
-      }else {
+        this.isCancel = true;
+      } else {
         Swal.fire({
           title: 'warning!',
           text: 'Cannot be request send !.',
+          icon: 'error',
+        });
+      }
+    });
+  }
+
+  cancelRequest() {
+    const payload = {
+      passengerCode: sessionStorage.getItem("userId"),
+      driveCode: this.submittedCart.userCode,
+    }
+    this.tripService.passengerCancelTripRequest(payload).subscribe(value => {
+      if (value.statusCode == 200) {
+        Swal.fire({
+          title: 'Cancel Request',
+          text: 'Your request is Cancel',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+        this.submittedCart = false;
+      }else {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Error!.',
           icon: 'error',
         });
       }

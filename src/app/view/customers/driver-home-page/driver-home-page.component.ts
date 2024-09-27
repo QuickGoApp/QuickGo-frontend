@@ -4,6 +4,7 @@ import {Loader} from "@googlemaps/js-api-loader";
 import {TripService} from "../../../../api-service/service/TripService";
 import {ApiResultFormatModel} from "../../../../api-service/model/common/ApiResultFormatModel";
 import Swal from "sweetalert2";
+import {DriverService} from "../../../../api-service/service/DriverService";
 
 @Component({
   selector: 'app-driver-home-page',
@@ -24,11 +25,12 @@ export class DriverHomePageComponent implements OnInit {
   notifications: any[] = [];
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor(private tripService: TripService) {
+  constructor(private tripService: TripService,private driverService:DriverService) {
   }
 
   ngOnInit(): void {
     this.initializeGoogleMaps();
+    this.saveDriverGeoLocation();
     this.loadNotification();
   }
 
@@ -191,4 +193,14 @@ export class DriverHomePageComponent implements OnInit {
   }
 
 
+  private saveDriverGeoLocation() {
+    const payload={
+      driverId:sessionStorage.getItem("userId"),
+      latitude: 37.7749,
+      longitude: -122.4194
+    }
+    this.driverService.saveDriverGeoLocation(payload).subscribe(value => {
+
+    });
+  }
 }

@@ -75,7 +75,7 @@
                         </ng-container>
                       </p>
                       <button class="btn btn-clear mr-2" (click)="requestSend()">Request</button>
-                      <button class="btn btn-cancel mr-2">Cancel</button>
+                      <button *ngIf="isCancel" class="btn btn-cancel mr-2" (click)="cancelRequest()">Cancel</button>
                     </div>
 
                     <!-- Heart Button for Favorite -->
