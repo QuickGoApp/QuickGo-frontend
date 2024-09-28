@@ -3,18 +3,18 @@ import { RouterModule, Routes } from '@angular/router';
 import { ReportComponent } from './report.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'purchaseorderreport', pathMatch: 'full' },
+  { path: '', redirectTo: 'report', pathMatch: 'full' },
   {
     path: '',
     component: ReportComponent,
     children: [
-      // {
-      //   path: 'purchase-order-report',
-      //   loadChildren: () =>
-      //     import('./purchaseorderreport/purchaseorderreport.module').then(
-      //       (m) => m.PurchaseorderreportModule
-      //     ),
-      // },
+      {
+        path: 'trip-report',
+        loadChildren: () =>
+          import('./trip-report/trip-report.component.module').then(
+            (m) => m.TripReportComponentModule
+          ),
+      },
 
     ],
   },

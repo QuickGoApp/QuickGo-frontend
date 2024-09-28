@@ -1,0 +1,95 @@
+<div class="page-header">
+  <div class="page-title">
+    <h4>Trip Report</h4>
+    <h6>Trip</h6>
+  </div>
+  <div class="page-btn">
+    <a class="btn btn-added"
+    ><img src="../../../../assets/img/icons/plus.svg" alt="img" />Trip Report</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="table-top">
+      <!-- Other elements like search and filter buttons -->
+    </div>
+
+    <!-- /Filter -->
+    <div class="card mb-0 border-0">
+      <div class="card-body pb-0">
+        <div class="row">
+          <div class="col-lg-2 col-sm-6 col-12">
+            <div class="form-group">
+              <label class="required">From Date</label>
+              <ngx-datepicker [(ngModel)]="fromDate" placeholder="From Date"></ngx-datepicker>
+            </div>
+          </div>
+          <div class="col-lg-2 col-sm-6 col-12">
+            <div class="form-group">
+              <label class="required">To Date</label>
+              <ngx-datepicker  placeholder="To Date"></ngx-datepicker>
+            </div>
+          </div>
+          <div class="col-lg-2 col-sm-6 col-12">
+            <div class="form-group">
+              <label class="required">Driver Code</label>
+              <input type="text" placeholder="Enter Driver Code"  />
+            </div>
+          </div>
+          <div class="col-lg-2 col-sm-6 col-12">
+            <div class="form-group">
+              <label class="required">Status</label>
+              <mat-select placeholder="Status">
+                <mat-option >
+                  aaaaaaaaa
+                </mat-option>
+              </mat-select>
+            </div>
+          </div>
+          <div class="col-lg-1 col-sm-6 col-12 ms-auto">
+            <div class="form-group">
+              <a class="btn btn-filters ms-auto">
+                <img src="../../../../assets/img/icons/search-whites.svg" alt="img" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- /Filter -->
+    <div class="table-responsive">
+      <table matSort matSortActive="Sno" matSortDirection="asc" matSortDisableClear class="table datanew">
+        <thead>
+        <tr>
+          <th mat-sort-header="DriverCode">Driver Code</th>
+          <th mat-sort-header="PassengerCode">Passenger Code</th>
+          <th mat-sort-header="FromDate">From Date</th>
+          <th mat-sort-header="ToDate">To Date</th>
+          <th mat-sort-header="Status">Status</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr >
+          <td colspan="12">
+            <h5 class="no-record">No matching records found</h5>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <app-custom-pagination></app-custom-pagination>
+    </div>
+  </div>
+</div>

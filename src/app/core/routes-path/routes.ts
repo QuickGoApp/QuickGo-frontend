@@ -74,6 +74,14 @@ export class routes {
     return this.users + '/add-vehicle';
   }
 
+  public static get report(): string {
+    return this.core + '/report';
+  }
+
+  public static get ripReport(): string {
+    return this.report + '/trip-report';
+  }
+
 
 
 
