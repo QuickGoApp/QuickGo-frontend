@@ -45,6 +45,7 @@ export class SignupComponent {
       this.authService.signup(this.form.value).subscribe(
         data=>{
           console.log(data)
+          Swal.fire('Success', 'Sign Up successfully!', 'success');
           this.storage.submit();
         },
         error => {

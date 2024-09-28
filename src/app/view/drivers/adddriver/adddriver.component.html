@@ -11,7 +11,7 @@
       <div class="row">
         <div class="col-lg-3 col-sm-6 col-12">
           <div class="form-group">
-            <label  class="required">Driver Name</label>
+            <label  class="required">User Name</label>
             <input
               type="text"
               placeholder="Enter user's name"
@@ -99,8 +99,13 @@
         <div class="col-lg-3 col-sm-6 col-12">
           <div class="form-group">
             <label class="required">Role</label>
-            <mat-select placeholder="Select Role" formControlName="selectedRole" (selectionChange)="onRoleChange($event)">
-              <mat-option *ngFor="let role of roles" [value]="role.value">{{ role.title }}</mat-option>
+            <mat-select placeholder="Select Role" formControlName="role" (selectionChange)="onRoleChange($event)">
+<!--              <mat-option *ngFor="let role of roles" [value]="role.value">{{ role.title}}</mat-option>-->
+              <mat-option  [value]="ROLE_ADMIN">ROLE_ADMIN</mat-option>
+              <!--                <mat-option  [value]="ROLE_TRAINER">ROLE_TRAINER</mat-option>-->
+              <mat-option  [value]="ROLE_DRIVER">ROLE_DRIVER</mat-option>
+              <mat-option  [value]="ROLE_PASSENGER">ROLE_PASSENGER</mat-option>
+              <mat-option  [value]="ROLE_TELEPHONE_OPERATOR">ROLE_TELEPHONE_OPERATOR</mat-option>
             </mat-select>
           </div>
         </div>

@@ -7,12 +7,12 @@
       "value": "ROLE_ADMIN"
     },
     {
-      "title": "ROLE_PASSENGER",
-      "value": "ROLE_PASSENGER"
-    },
-    {
       "title": "ROLE_DRIVER",
       "value": "ROLE_DRIVER"
+    },
+    {
+      "title": "ROLE_PASSENGER",
+      "value": "ROLE_PASSENGER"
     },
     {
       "title": "ROLE_TELEPHONE_OPERATOR",

@@ -32,12 +32,12 @@ export class ManagevehiclesComponent {
   initChecked = false;
 
   form = new FormGroup({
-    vehicle_name: new FormControl(''),
-    vehicle_number: new FormControl(''),
-    type: new FormControl(''),
-    color: new FormControl(''),
-    vehicle_conditions: new FormControl(''),
-    seats: new FormControl(''),
+    vehicle_name: new FormControl('', [Validators.required]),
+    vehicle_number: new FormControl('', [Validators.required]),
+    type: new FormControl('', [Validators.required]),
+    color: new FormControl('', [Validators.required]),
+    vehicle_conditions: new FormControl('', [Validators.required]),
+    seats: new FormControl('', [Validators.required]),
     selectedDriver: new FormControl(''),
   });
 
@@ -160,7 +160,7 @@ export class ManagevehiclesComponent {
         this.vehicleService.addVehicle(vehicleData).subscribe(
           data => {
             console.log('Vehicle added successfully', data);
-            Swal.fire('Success', 'Vehicle added successfully!', 'success');
+            Swal.fire('Success', 'Vehicle saved successfully!', 'success');
             this.loadVehicles();
           },
           error => {

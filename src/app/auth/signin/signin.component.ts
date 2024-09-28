@@ -34,14 +34,17 @@ export class SigninComponent {
       this.authService.signIn(this.form.value).subscribe(
         data => {
           console.log(data)
+          Swal.fire('Success', 'Login successfully!', 'success');
           this.storage.login(data);
         },
         error => {
-          Swal.fire(
-            '',
-            error.error.message,
-            'error'
-          )
+          // Swal.fire(
+          //   '',
+          //   error.error.message,
+          //   'error'
+          // )
+          console.error('Error:', error.error.message);
+          Swal.fire('Error', 'Invalid username or passowrd', 'error');
         }
       )
     } else {
