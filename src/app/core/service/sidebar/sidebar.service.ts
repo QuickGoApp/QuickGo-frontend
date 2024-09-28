@@ -127,7 +127,21 @@ export class SidebarService {
               subRoutes: [],
             },
             {
-              menuValue: 'User list',
+              menuValue: 'Update Driver',
+              hasSubRoute: false,
+              showSubRoute: false,
+              route: routes.updateDriver,
+              subRoutes: [],
+            },
+            {
+              menuValue: 'Add Vehicle',
+              hasSubRoute: false,
+              showSubRoute: false,
+              route: routes.addVehicle,
+              subRoutes: [],
+            },
+            {
+              menuValue: 'User List',
               hasSubRoute: false,
               showSubRoute: false,
               route: routes.userList,
@@ -158,24 +172,7 @@ export class SidebarService {
           subMenus: [],
         },
       ],
-    },
-    {
-      tittle: 'Manage Drivers',
-      showAsTab: true,
-      separateRoute: false,
-      menu: [
-        {
-          menuValue: 'Add Driver',
-          route: routes.addDriver,
-          hasSubRoute: false,
-          showSubRoute: false,
-          icon: 'bar-chart-2',
-          subMenus: [],
-        },
-
-
-      ],
-    },
+    }
 
   ];
 

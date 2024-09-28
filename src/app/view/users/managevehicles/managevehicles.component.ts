@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { routes } from 'src/app/core/routes-path/routes';
 import {FormControl, FormGroup, ValidationErrors, Validators} from "@angular/forms";
 import Swal from "sweetalert2";
@@ -16,7 +16,7 @@ interface data {
   templateUrl: './managevehicles.component.html',
   styleUrls: ['./managevehicles.component.scss']
 })
-export class ManagevehiclesComponent {
+export class ManagevehiclesComponent implements OnInit{
   public routes = routes;
   existingVehicleId: number | null = null;
   show = false;
@@ -102,8 +102,12 @@ export class ManagevehiclesComponent {
   //Function to load vehicles
   loadDrivers() {
     this.driverService.getDrivers().subscribe((response: any) => {
-      this.drivers = response;
+      if(response.statusCode==200){
+        this.drivers = response.data;
+      }
+
     }, error => {
+      Swal.fire('Error', 'Error fetching drivers', 'error');
       console.error('Error fetching drivers:', error);
     });
   }

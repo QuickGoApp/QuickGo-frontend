@@ -235,6 +235,7 @@ export class DriverHomePageComponent implements OnInit, OnDestroy {
   private saveDriverGeoLocation(latitude: number, longitude: number) {
     const payload = {
       driverId: sessionStorage.getItem("userId"),
+      type:sessionStorage.getItem("vehicleType"),
       latitude: latitude,
       longitude: longitude
     };

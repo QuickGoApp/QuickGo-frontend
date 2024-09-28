@@ -67,20 +67,17 @@ export class routes {
     return this.users + '/user-privilege';
   }
 
-
-
-
-  public static get driver(): string {
-    return this.core + '/driver';
-  }
-
-  public static get addDriver(): string {
-    return this.driver + '/add-driver';
-  }
-
   public static get updateDriver(): string {
-    return this.driver + '/update-driver';
+    return this.users + '/update-profile';
   }
+  public static get addVehicle(): string {
+    return this.users + '/add-vehicle';
+  }
+
+
+
+
+
 
 
 

@@ -524,43 +524,66 @@ export class PassengerHomePageComponent implements OnInit {
   }
 
 
+
+  private retryCount = 0;
+
   driversAndLocation(pickupLatLng: google.maps.LatLng): void {
-    const {vehicleType} = this.locationForm.value;
+    const { vehicleType } = this.locationForm.value;
     const passenger = {
       latitude: pickupLatLng.lat(),
       longitude: pickupLatLng.lng(),
-      type:vehicleType,
-      radius: 2
+      type: vehicleType,
+      radius: 2 // Initial radius
     };
 
-    console.log(" pickup lan " + this.pickupLatLng.lat)
-    console.log(" pickup lag " + this.pickupLatLng.lng)
-    console.log(" type " + vehicleType)
+    console.log("pickup lat: " + pickupLatLng.lat());
+    console.log("pickup lng: " + pickupLatLng.lng());
+    console.log("vehicle type: " + vehicleType);
 
     this.driverService.getDriversAndLocation(passenger).subscribe((response) => {
       console.log('API Response:', response);
-      if (response.statusCode == 200) {
-        // If response data is not empty, stop the polling
+      if (response.statusCode === 200) {
         if (response.data.length > 0) {
+          // Stop the polling if we get valid data
           console.log('Valid response received. Stopping further calls.');
           this.driverAndLocationDetails(response.data);
-          return;
+          this.retryCount = 0; // Reset retryCount after valid response
+          return; // Stop further execution
         } else {
-          // If the response is empty, wait 30 seconds and try again
-          console.log('No valid response. Retrying in 30 seconds...');
-          passenger.radius = 5;
-          this.driversAndLocation(pickupLatLng);  // Recursive call after 30 seconds
+          // If the response is empty, increase the radius and retry
+          this.retryCount++; // Use `this.retryCount`
+          if (this.retryCount < 3) {
+            // Retry up to 3 times
+            console.log('No valid response. Retrying in 10 seconds... (Attempt ' + this.retryCount + ')');
+            passenger.radius = 5; // Increase the radius for the next attempt
+
+            setTimeout(() => {
+              this.driversAndLocation(pickupLatLng); // Recursive call after 10 seconds
+            }, 10000); // 10 second delay
+          } else {
+            // After 3 attempts, stop retrying and show an error message
+            console.log('No drivers available after 3 attempts.');
+            Swal.fire({
+              title: 'No Drivers Available',
+              text: 'We were unable to find drivers in your area after multiple attempts. Please try again later.',
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
+            this.retryCount = 0; // Reset retryCount after failing
+          }
         }
       }
     }, error => {
       Swal.fire({
-        title: 'warning!',
+        title: 'Warning!',
         text: 'Something went wrong',
         icon: 'warning',
         confirmButtonText: 'OK'
       });
     });
   }
+
+
 
   driverAndLocationDetails(payload: any) {
     this.driverService.getGeolocationDriverDetails(payload).subscribe((response: ApiResultFormatModel) => {
