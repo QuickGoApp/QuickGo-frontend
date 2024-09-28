@@ -22,7 +22,17 @@ const routes: Routes = [
         path: 'user-privilege',
         loadChildren: () =>
           import('./user-privilege/user-privilege.module').then((m) => m.UserPrivilegeModule),
-      }
+      },
+      {
+        path: 'update-profile',
+        loadChildren: () =>
+          import('./updateprofile/updateprofile.module').then((m) => m.UpdateprofileModule),
+      },
+      {
+        path: 'add-vehicle',
+        loadChildren: () =>
+          import('./managevehicles/managevehicles.module').then((m) => m.ManagevehiclesModule),
+      },
     ],
   },
 ];

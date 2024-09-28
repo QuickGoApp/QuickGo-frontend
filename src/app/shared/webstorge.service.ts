@@ -20,6 +20,7 @@ export class WebstorgeService {
     sessionStorage.setItem('token', data.token);
     sessionStorage.setItem('userId', data.userCode);
     sessionStorage.setItem('privilegeIds', data.privilegeIds);
+    sessionStorage.setItem('vehicleType', data.vehicleType);
 
     // role wise manage main ui
     // this.router.navigate([routes.dashboard]);

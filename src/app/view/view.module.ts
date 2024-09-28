@@ -10,11 +10,6 @@ import {LayoutComponent} from "../common-component/layout/layout.component";
 import {sharedModule} from "../shared/shared.module";
 import {ViewComponent} from "./view.component";
 import {ViewRoutingModule} from "./view-routing.module";
-import { DriversComponent } from './drivers/drivers.component';
-import { AdddriverComponent } from './drivers/adddriver/adddriver.component';
-import { VehiclesComponent } from './vehicles/vehicles.component';
-
-
 
 
 @NgModule({
@@ -27,9 +22,7 @@ import { VehiclesComponent } from './vehicles/vehicles.component';
     SidebarFourComponent,
     SidebarFiveComponent,
     LayoutComponent,
-    //VehiclesComponent,
-    //DriversComponent,
-    //AdddriverComponent
+
 
   ],
   imports: [CommonModule, ViewRoutingModule, sharedModule ],

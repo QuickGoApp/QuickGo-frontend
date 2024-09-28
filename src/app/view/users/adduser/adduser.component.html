@@ -11,7 +11,7 @@
       <div class="row">
         <div class="col-lg-3 col-sm-6 col-12">
           <div class="form-group">
-            <label  class="required">Name</label>
+            <label class="required">Name</label>
             <input
               type="text"
               placeholder="Enter user's name"
@@ -22,31 +22,7 @@
             />
           </div>
         </div>
-        <div class="col-lg-3 col-sm-6 col-12">
-          <div class="form-group">
-            <label class="required">User Name</label>
-            <input type="text" formControlName="username" class="form-control">
-          </div>
-        </div>
-<!--        <div class="col-lg-3 col-sm-6 col-12">-->
-<!--          <div class="form-group">-->
-<!--            <label class="required">User Code</label>-->
-<!--            <input type="text" formControlName="user_code" class="form-control">-->
-<!--          </div>-->
-<!--        </div>-->
-        <div class="col-lg-3 col-sm-6 col-12">
-          <div class="form-group">
-            <label  class="required">Contact No.</label>
-            <input
-              type="text"
-              placeholder="Enter user mobile number"
-              formControlName="mobileNum"
-              [ngClass]="{
-                  'is-invalid': f['mobileNum'].touched && f['mobileNum'].invalid
-                }"
-            />
-          </div>
-        </div>
+
         <div class="col-lg-3 col-sm-6 col-12">
           <div class="form-group">
             <label>Email</label>
@@ -60,9 +36,35 @@
             />
           </div>
         </div>
+        <div class="col-lg-3 col-sm-6 col-122">
+          <div class="form-group">
+            <label class="required">Address</label>
+            <input type="text" formControlName="address" class="form-control">
+          </div>
+        </div>
         <div class="col-lg-3 col-sm-6 col-12">
           <div class="form-group">
-            <label  class="required">Password</label>
+            <label class="required">Contact No.</label>
+            <input
+              type="text"
+              placeholder="Enter user mobile number"
+              formControlName="mobile_num"
+              [ngClass]="{
+                  'is-invalid': f['mobile_num'].touched && f['mobile_num'].invalid
+                }"
+            />
+          </div>
+        </div>
+        <div class="col-lg-3 col-sm-6 col-12">
+          <div class="form-group">
+            <label class="required">User Name</label>
+            <input type="text" formControlName="username" class="form-control">
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6 col-12">
+          <div class="form-group">
+            <label class="required">Password</label>
             <div class="pass-group">
               <input
                 type="password"
@@ -89,29 +91,17 @@
 
         <div class="col-lg-3 col-sm-6 col-12">
           <div class="form-group">
-            <label  class="required">Role</label>
-<!--              <mat-select class="select" placeholder="Select" >-->
-            <mat-select class="select" placeholder="Select" [(ngModel)]="selectedRole" (selectionChange)="onRoleChange($event)" formControlName="role">
-            <mat-option  [value]="ROLE_ADMIN">ROLE_ADMIN</mat-option>
-<!--                <mat-option  [value]="ROLE_TRAINER">ROLE_TRAINER</mat-option>-->
-                <mat-option  [value]="ROLE_DRIVER">ROLE_DRIVER</mat-option>
-              </mat-select>
-
+            <label class="required">Role</label>
+            <mat-select placeholder="Select Role" formControlName="role" (selectionChange)="onRoleChange($event)">
+              <mat-option *ngFor="let role of roles" [value]="role.value">{{ role.title }}</mat-option>
+            </mat-select>
           </div>
         </div>
-        <div class="col-lg-3 col-sm-6 col-12">
-          <div class="form-group">
-            <label  class="required">Address</label>
-            <input type="text" formControlName="address" class="form-control">
-          </div>
-        </div>
-
 
       </div>
 
-
       <div class="col-lg-12">
-        <button [disabled]="form.invalid" class="btn btn-submit mr-2" type="submit">Sign Up</button>
+        <button [disabled]="form.invalid" class="btn btn-submit mr-2" type="submit">Save</button>
         <button type="button" class="btn btn-clear mr-2 ">Clear</button>
         <a [routerLink]="routes.dashboard" class="btn btn-cancel">Cancel</a>
       </div>
@@ -119,3 +109,188 @@
   </form>
 
 </div>
+
+<!-- /User list -->
+<div class="card">
+  <div class="card-body">
+    <div class="table-top">
+      <div class="search-set">
+        <div class="search-path">
+          <a
+            (click)="showFilter = !showFilter"
+            [class.setclose]="showFilter === true"
+            class="btn btn-filter"
+            id="filter_search"
+          >
+            <img
+              *ngIf="showFilter === false"
+              src="../../../../assets/img/icons/filter.svg"
+              alt="img"
+            />
+            <span
+            ><img
+              *ngIf="showFilter === true"
+              src="../../../../assets/img/icons/closes.svg"
+              alt="img"
+            /></span>
+          </a>
+        </div>
+        <div class="search-input">
+          <a class="btn btn-searchset"
+          ><img src="../../../../assets/img/icons/search-white.svg" alt="img"
+          /></a>
+          <div class="dataTables_filter">
+            <label>
+              <input
+                [(ngModel)]="searchDataValue"
+                (ngModelChange)="searchData(searchDataValue)"
+                type="search"
+                class="form-control"
+                placeholder="Search..."
+              />
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="wordset">
+        <ul>
+          <li>
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="pdf"
+            ><img src="../../../../assets/img/icons/pdf.svg" alt="img"
+            /></a>
+          </li>
+          <li>
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="excel"
+            ><img src="../../../../assets/img/icons/excel.svg" alt="img"
+            /></a>
+          </li>
+          <li>
+            <a data-bs-toggle="tooltip" data-bs-placement="top" title="print" (click)="generatePDF()"
+            ><img src="../../../../assets/img/icons/printer.svg" alt="img"
+            /></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- /Filter -->
+    <div
+      class="card mb-0 border-0"
+      [ngClass]="{
+        'show-sub-menu': showFilter === true,
+        'hide-sub-menu': showFilter === false
+      }"
+    >
+      <div class="card-body pb-0">
+        <div class="row">
+          <div class="col-lg-2 col-sm-6 col-12">
+            <div class="form-group">
+              <input type="text" placeholder="Enter User Name"/>
+            </div>
+          </div>
+          <div class="col-lg-2 col-sm-6 col-12">
+            <div class="form-group">
+              <input type="text" placeholder="Enter Phone"/>
+            </div>
+          </div>
+          <div class="col-lg-2 col-sm-6 col-12">
+            <div class="form-group">
+              <input type="text" placeholder="Enter Email"/>
+            </div>
+          </div>
+          <div class="col-lg-2 col-sm-6 col-12">
+            <div class="form-group">
+              <ngx-datepicker [(ngModel)]="date"></ngx-datepicker>
+            </div>
+          </div>
+          <div class="col-lg-2 col-sm-6 col-12">
+            <div class="form-group">
+              <mat-select [(ngModel)]="selectedValue1" [ngModelOptions]="{standalone: true}" class="select"
+                          placeholder="Disable">
+                <mat-option *ngFor="let data of selectedList1" [value]="data.value">
+                  {{ data.value }}
+                </mat-option>
+              </mat-select>
+            </div>
+          </div>
+          <div class="col-lg-1 col-sm-6 col-12 ms-auto">
+            <div class="form-group">
+              <a class="btn btn-filters ms-auto"
+              ><img src="../../../../assets/img/icons/search-whites.svg" alt="img"
+              /></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /Filter -->
+    <div class="table-responsive">
+      <table id="tableContent"
+             (matSortChange)="sortData($event)"
+             matSort
+             matSortActive="Sno"
+             matSortDirection="asc"
+             matSortDisableClear
+             class="table datanew"
+      >
+        <thead>
+        <tr>
+          <th>
+            <label class="checkboxs" (click)="selectAll(initChecked)">
+              <input type="checkbox" [(ngModel)]="initChecked"/>
+              <span class="checkmarks"></span>
+            </label>
+          </th>
+          <th mat-sort-header="role_id">Role</th>
+          <th mat-sort-header="name">name</th>
+          <th mat-sort-header="user_code">User Code</th>
+          <th mat-sort-header="address">Address</th>
+          <th mat-sort-header="email">Email</th>
+          <th mat-sort-header="mobile_num">ContactNo</th>
+          <th mat-sort-header="username">User Name</th>
+          <th mat-sort-header="is_active">Status</th>
+          <th mat-sort-header="action">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let users of tableData; let i = index">
+          <td>
+            <label class="checkboxs">
+              <input type="checkbox" [(ngModel)]="users.isSelected"/>
+              <span class="checkmarks"></span>
+            </label>
+          </td>
+          <td>{{ users.role_id }}</td>
+          <td>{{ users.name }}</td>
+          <td>{{ users.user_code }}</td>
+          <td>{{ users.address }}</td>
+          <td>{{ users.email }}</td>
+          <td>{{ users.mobile_num }}</td>
+          <td>{{ users.username }}</td>
+          <td>{{ users.is_active }}</td>
+          <td>
+            <a
+              (click)="onUpdate(users)"
+              class="me-3">
+              <img src="../../../../assets/img/icons/edit.svg" alt="img"/>
+            </a>
+            <a
+              (click)="deleteBtn(users.id)"
+              class="me-3 confirm-text"
+              href="javascript:void(0);"
+            >
+              <img src="../../../../assets/img/icons/delete.svg" alt="img"/>
+            </a>
+          </td>
+        </tr>
+        <tr *ngIf="tableData.length === 0">
+          <td colspan="12">
+            <h5 class="no-record">No matching records found</h5>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <app-custom-pagination></app-custom-pagination>
+    </div>
+  </div>
+</div>
+<!-- /list -->

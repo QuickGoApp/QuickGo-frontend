@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { routes } from 'src/app/core/routes-path/routes';
-import { MatTableDataSource } from '@angular/material/table';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import Swal from "sweetalert2";
 import { SweetalertService } from 'src/app/shared/sweetalert/sweetalert.service';

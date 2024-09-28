@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import {RouterModule, Routes} from "@angular/router";
 import {ViewComponent} from "./view.component";
-import {VehiclesModule} from "./vehicles/vehicles.module";
 
 const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -24,16 +23,6 @@ const routes: Routes = [
         path: 'user',
         loadChildren: () =>
           import('./users/users.module').then((m) => m.UsersModule),
-      },
-      {
-        path: 'driver',
-        loadChildren: () =>
-          import('./drivers/drivers.module').then((m) => m.DriversModule),
-      },
-      {
-        path: 'vehicle',
-        loadChildren: () =>
-          import('./vehicles/vehicles.module').then((m) => m.VehiclesModule),
       },
       {
         path: 'customer',
