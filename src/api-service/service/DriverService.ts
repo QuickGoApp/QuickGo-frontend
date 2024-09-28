@@ -33,12 +33,9 @@ export  class DriverService {
   }
   getGeolocationDriverDetails(payload: any) {
     const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
-    return this.http.post<ApiResultFormatModel>(this.BASEURL + 'location/getGeolocationDrivers', payload, {headers});
+    return this.http.post<ApiResultFormatModel>(this.BASEURL + 'driver/getGeolocationDrivers', payload, {headers});
   }
 
-  getDriversAndLocation(payload: any) {
-    return this.http.post<ApiResultFormatModel>(this.DRIVER + 'driver/search', payload);
-  }
 
   getDrivers(): Observable<any[]> {
     const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
@@ -62,5 +59,10 @@ export  class DriverService {
  saveDriverGeoLocation(payload: any) {
     return this.http.post<ApiResultFormatModel>(this.DRIVER + 'drivers/location', payload);
   }
+
+  getDriversAndLocation(payload: any) {
+    return this.http.post<ApiResultFormatModel>(this.DRIVER + 'drivers/search', payload);
+  }
+
 
 }

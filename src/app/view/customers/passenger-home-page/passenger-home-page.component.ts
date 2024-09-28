@@ -219,85 +219,10 @@ export class PassengerHomePageComponent implements OnInit {
       this.geocodePickupLocationAndFocusMap(pickupLocation);
       this.geocodeLocations();
 
-      // Call the recursive function to get drivers and their location
-      //this.driversAndLocation();
-
-      this.driverAndLocationDetails();
-
 
     } else {
       console.log('Form is invalid');
     }
-  }
-
-  driversAndLocation(): void {
-    const passenger = {
-      latitude: this.pickupLatLng.lat,
-      longitude: this.pickupLatLng.lng,
-      radius: 2000, // Set radius to 5000 as per your requirement
-    };
-
-    this.driverService.getDriversAndLocation(passenger).subscribe((response) => {
-      console.log('API Response:', response);
-
-      // If response data is not empty, stop the polling
-      if (response && response.data && response.data.length > 0) {
-        console.log('Valid response received. Stopping further calls.');
-        return;
-      }
-
-      // If the response is empty, wait 30 seconds and try again
-      console.log('No valid response. Retrying in 30 seconds...');
-      setTimeout(() => {
-        passenger.radius = 5000;
-        this.driversAndLocation();  // Recursive call after 30 seconds
-      }, 30000); // 30 seconds
-    });
-  }
-
-  driverAndLocationDetails() {
-    const {vehicleType, contactNumber} = this.locationForm.value;
-
-    //getGeolocationDrivers
-    const payload = {
-      pickupLocation: this.pickupLatLng,
-      dropLocation: this.dropLatLng,
-      vehicleType: vehicleType,
-      contactNumber: contactNumber,
-    };
-
-    this.driverService.getGeolocationDriverDetails(payload).subscribe((response: ApiResultFormatModel) => {
-      if (response.statusCode === 200) {
-        this.activeVehicleLocations = response.data.map((vehicle: any) => {
-          return {
-            coordinates: vehicle.coordinates, // lat, lng
-            vehicleType: vehicle.type, //vehicle type
-            name: vehicle.name,               // Location name
-            icon: vehicle.icon,               // Icon URL
-            image: vehicle.image,
-            vehicleNumber: vehicle.vehicleNumber, // Vehicle number
-            color: vehicle.color,             // Vehicle color
-            rate: vehicle.rate,               // Vehicle rate
-            seats: vehicle.seats,             // Number of seats
-            isFavorite: vehicle.favorite,   // Whether it's a favorite
-            userCode: vehicle.userCode,
-            favoriteID: vehicle.favoriteID
-          };
-        });
-
-        // Call the method to add markers on the map using updated vehicleLocations
-        this.addVehicleMarkers();
-      } else {
-
-        Swal.fire({
-          title: 'warning!',
-          text: 'Error fetching vehicle locations.',
-          icon: 'warning',
-          confirmButtonText: 'OK'
-        });
-      }
-    });
-
   }
 
   private addVehicleMarkers(): void {
@@ -442,6 +367,10 @@ export class PassengerHomePageComponent implements OnInit {
         this.pickupLatLng = {lat: pickupLatLng.lat(), lng: pickupLatLng.lng()};
         this.dropLatLng = {lat: dropLatLng.lat(), lng: dropLatLng.lng()};
 
+        // Call the recursive function to get drivers and their location
+        this.driversAndLocation(pickupLatLng);
+
+
         // After both pickup and drop locations are geocoded, show the route between them
         this.displayRoute(pickupLatLng, dropLatLng);
 
@@ -584,7 +513,7 @@ export class PassengerHomePageComponent implements OnInit {
           confirmButtonText: 'OK'
         });
         this.submittedCart = false;
-      }else {
+      } else {
         Swal.fire({
           title: 'Error!',
           text: 'Error!.',
@@ -593,4 +522,80 @@ export class PassengerHomePageComponent implements OnInit {
       }
     });
   }
+
+
+  driversAndLocation(pickupLatLng: google.maps.LatLng): void {
+    const {vehicleType} = this.locationForm.value;
+    const passenger = {
+      latitude: pickupLatLng.lat(),
+      longitude: pickupLatLng.lng(),
+      type:vehicleType,
+      radius: 2
+    };
+
+    console.log(" pickup lan " + this.pickupLatLng.lat)
+    console.log(" pickup lag " + this.pickupLatLng.lng)
+    console.log(" type " + vehicleType)
+
+    this.driverService.getDriversAndLocation(passenger).subscribe((response) => {
+      console.log('API Response:', response);
+      if (response.statusCode == 200) {
+        // If response data is not empty, stop the polling
+        if (response.data.length > 0) {
+          console.log('Valid response received. Stopping further calls.');
+          this.driverAndLocationDetails(response.data);
+          return;
+        } else {
+          // If the response is empty, wait 30 seconds and try again
+          console.log('No valid response. Retrying in 30 seconds...');
+          passenger.radius = 5;
+          this.driversAndLocation(pickupLatLng);  // Recursive call after 30 seconds
+        }
+      }
+    }, error => {
+      Swal.fire({
+        title: 'warning!',
+        text: 'Something went wrong',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      });
+    });
+  }
+
+  driverAndLocationDetails(payload: any) {
+    this.driverService.getGeolocationDriverDetails(payload).subscribe((response: ApiResultFormatModel) => {
+      console.log("driverAndLocationDetails >> " + JSON.stringify(response));
+      if (response.statusCode === 200) {
+        this.activeVehicleLocations = response.data.map((vehicle: any) => {
+          return {
+            coordinates: vehicle.coordinates, // lat, lng
+            vehicleType: vehicle.type, //vehicle type
+            name: vehicle.name,               // Location name
+            icon: vehicle.icon,               // Icon URL
+            image: vehicle.image,
+            vehicleNumber: vehicle.vehicleNumber, // Vehicle number
+            color: vehicle.color,             // Vehicle color
+            rate: vehicle.rate,               // Vehicle rate
+            seats: vehicle.seats,             // Number of seats
+            isFavorite: vehicle.favorite,   // Whether it's a favorite
+            userCode: vehicle.userCode,
+            favoriteID: vehicle.favoriteID
+          };
+        });
+
+        // Call the method to add markers on the map using updated vehicleLocations
+        this.addVehicleMarkers();
+      } else {
+
+        Swal.fire({
+          title: 'warning!',
+          text: 'Error fetching vehicle locations.',
+          icon: 'warning',
+          confirmButtonText: 'OK'
+        });
+      }
+    });
+
+  }
+
 }

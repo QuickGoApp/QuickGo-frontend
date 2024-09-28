@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {routes} from "../../../core/routes-path/routes";
 import {Loader} from "@googlemaps/js-api-loader";
 import {TripService} from "../../../../api-service/service/TripService";
@@ -11,7 +11,7 @@ import {DriverService} from "../../../../api-service/service/DriverService";
   templateUrl: './driver-home-page.component.html',
   styleUrls: ['./driver-home-page.component.scss']
 })
-export class DriverHomePageComponent implements OnInit {
+export class DriverHomePageComponent implements OnInit, OnDestroy {
 
   protected readonly routes = routes;
   public totalPrice;
@@ -22,16 +22,30 @@ export class DriverHomePageComponent implements OnInit {
   private directionsRenderer!: google.maps.DirectionsRenderer;
   private geocoder!: google.maps.Geocoder;
 
+  private geoLocationLat;
+  private geoLocationLng;
+
+  private locationInterval: any;  // Interval to fetch geolocation
+
+
   notifications: any[] = [];
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor(private tripService: TripService,private driverService:DriverService) {
+  constructor(private tripService: TripService, private driverService: DriverService) {
   }
 
   ngOnInit(): void {
     this.initializeGoogleMaps();
-    this.saveDriverGeoLocation();
     this.loadNotification();
+    // Start interval to save driver geolocation every 10 seconds
+    this.startGeoLocationInterval();
+  }
+
+  ngOnDestroy(): void {
+    // Stop the interval when component is destroyed
+    if (this.locationInterval) {
+      clearInterval(this.locationInterval);
+    }
   }
 
   private initializeGoogleMaps() {
@@ -57,6 +71,8 @@ export class DriverHomePageComponent implements OnInit {
             lng: position.coords.longitude
           };
 
+          this.geoLocationLat = position.coords.latitude;
+          this.geoLocationLng = position.coords.longitude
           // Center the map on the current location
           this.map.setCenter(currentLocation);
 
@@ -66,6 +82,9 @@ export class DriverHomePageComponent implements OnInit {
             map: this.map,
             title: "You are here"
           });
+
+          // Call saveDriverGeoLocation and pass the geolocation values
+          this.saveDriverGeoLocation(this.geoLocationLat, this.geoLocationLng);
         }, () => {
           // Handle location error
           console.error('Error getting location');
@@ -83,6 +102,26 @@ export class DriverHomePageComponent implements OnInit {
       console.error('Error loading Google Maps:', error);
     });
   }
+
+  private startGeoLocationInterval() {
+    // Check if geolocation is available and start saving the driver's location every 10 seconds
+    if (navigator.geolocation) {
+      this.locationInterval = setInterval(() => {
+        navigator.geolocation.getCurrentPosition((position) => {
+          this.geoLocationLat = position.coords.latitude;
+          this.geoLocationLng = position.coords.longitude;
+
+          // Call saveDriverGeoLocation with the updated geolocation
+          this.saveDriverGeoLocation(this.geoLocationLat, this.geoLocationLng);
+        }, (error) => {
+          console.error('Error getting updated location:', error);
+        });
+      }, 10000);  // 10000 milliseconds = 10 seconds
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
+  }
+
 
   loadNotification() {
     const payload = {
@@ -193,14 +232,18 @@ export class DriverHomePageComponent implements OnInit {
   }
 
 
-  private saveDriverGeoLocation() {
-    const payload={
-      driverId:sessionStorage.getItem("userId"),
-      latitude: 37.7749,
-      longitude: -122.4194
-    }
-    this.driverService.saveDriverGeoLocation(payload).subscribe(value => {
+  private saveDriverGeoLocation(latitude: number, longitude: number) {
+    const payload = {
+      driverId: sessionStorage.getItem("userId"),
+      latitude: latitude,
+      longitude: longitude
+    };
 
+    console.log("Saving geolocation:", latitude, longitude);
+
+    this.driverService.saveDriverGeoLocation(payload).subscribe(value => {
+      console.log("Geo-location saved successfully.");
     });
   }
+
 }
