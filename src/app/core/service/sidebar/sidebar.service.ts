@@ -165,11 +165,19 @@ export class SidebarService {
       menu: [
         {
           menuValue: 'Report',
-          route: routes.userList,
-          hasSubRoute: false,
+          route: routes.report,
+          hasSubRoute: true,
           showSubRoute: false,
           icon: 'bar-chart-2',
-          subMenus: [],
+          subMenus: [
+            {
+              menuValue: 'Trip Report',
+              hasSubRoute: false,
+              showSubRoute: false,
+              route: routes.ripReport,
+              subRoutes: [],
+            },
+          ],
         },
       ],
     }
