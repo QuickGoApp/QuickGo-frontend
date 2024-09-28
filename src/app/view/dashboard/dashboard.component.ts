@@ -12,6 +12,7 @@ import {
   ApexLegend,
   ApexFill,
 } from 'ng-apexcharts';
+import { DashboardService } from 'src/api-service/service/DashboardService';
 import {  SettingsService } from 'src/app/core/core.index';
 
 export type ChartOptions = {
@@ -37,6 +38,7 @@ export type ChartOptions = {
   fill: ApexFill | any;
 };
 import { routes } from 'src/app/core/routes-path/routes';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-dashboard',
@@ -47,6 +49,13 @@ export class DashboardComponent {
   public routes = routes;
 
   @ViewChild('chart') chart!: ChartComponent;
+
+  public totalDrivers = 0;
+  public totalPassengers = 0;
+  public totalActiveTrips = 0;
+  public totalCompletedTrips = 0;
+
+
   public chartOptions: Partial<ChartOptions>;
   public currency!: string;
   public recentlyAddedProducts = [
@@ -115,7 +124,7 @@ export class DashboardComponent {
     },
   ];
 
-  constructor( private setting : SettingsService) {
+  constructor( private setting : SettingsService, private dashboardService: DashboardService) {
     this.chartOptions = {
       series: [
         {
@@ -195,10 +204,21 @@ export class DashboardComponent {
         opacity: 1,
       },
     };
-
+    this.getDashboardAnalytics();
   }
 
-
+  private getDashboardAnalytics() {
+    this.dashboardService.getDashboardAnalytics().subscribe((data) => {
+      if  (data.statusCode === 200) {
+          this.totalDrivers = data.data.totalDrivers;
+          this.totalPassengers = data.data.totalPassengers;
+          this.totalActiveTrips = data.data.totalActiveTrips;
+          this.totalCompletedTrips = data.data.totalCompletedTrips;
+      }else {
+        Swal.fire('Error', data.message, 'error');
+      }
+    });
+  }
 
   public sortRecentlyAddedProducts(sort: Sort) {
     const data = this.recentlyAddedProducts.slice();

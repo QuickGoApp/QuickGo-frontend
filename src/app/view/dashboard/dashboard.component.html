@@ -3,8 +3,10 @@
   <div class="col-lg-3 col-sm-6 col-12 d-flex">
     <div class="dash-count">
       <div class="dash-counts">
-        <h4>100</h4>
-        <h5>Active Members</h5>
+        <h4>
+          {{ totalDrivers }}
+        </h4>
+        <h5>Total Drivers</h5>
       </div>
       <div class="dash-imgs">
         <i-feather name="user"></i-feather>
@@ -14,8 +16,10 @@
   <div class="col-lg-3 col-sm-6 col-12 d-flex">
     <div class="dash-count das1">
       <div class="dash-counts">
-        <h4>100</h4>
-        <h5>Active Trainers</h5>
+        <h4>
+          {{ totalPassengers }}
+        </h4>
+        <h5>Total Passengers</h5>
       </div>
       <div class="dash-imgs">
         <i-feather name="user-check"></i-feather>
@@ -25,8 +29,8 @@
   <div class="col-lg-3 col-sm-6 col-12 d-flex">
     <div class="dash-count das2">
       <div class="dash-counts">
-        <h4>100</h4>
-        <h5>Total Exercise</h5>
+        <h4>{{totalActiveTrips}}</h4>
+        <h5>Active Trips</h5>
       </div>
       <div class="dash-imgs">
         <i-feather name="file-text"></i-feather>
@@ -36,8 +40,8 @@
   <div class="col-lg-3 col-sm-6 col-12 d-flex">
     <div class="dash-count das3">
       <div class="dash-counts">
-        <h4>105</h4>
-        <h5>Total Schedule</h5>
+        <h4>{{totalCompletedTrips}}</h4>
+        <h5>Completed Trips</h5>
       </div>
       <div class="dash-imgs">
         <i-feather name="file"></i-feather>
@@ -50,14 +54,8 @@
   <div class="card-body">
     <h4 class="card-title">Schedule</h4>
     <div class="table-responsive dataview">
-      <table
-        (matSortChange)="sortExpiredProducts($event)"
-        matSort
-        matSortActive="Sno"
-        matSortDirection="asc"
-        matSortDisableClear
-        class="table"
-      >
+      <table (matSortChange)="sortExpiredProducts($event)" matSort matSortActive="Sno" matSortDirection="asc"
+        matSortDisableClear class="table">
         <thead>
           <tr>
             <th mat-sort-header="Test">Test</th>
@@ -75,12 +73,6 @@
               <a href="javascript:void(0);">{{ dashboard2.ProductCode }}</a>
             </td>
             <td class="productimgname">
-<!--              <a class="product-img" [routerLink]="routes.productList">-->
-<!--                <img [src]="dashboard2.img" alt="product" />-->
-<!--              </a>-->
-<!--              <a [routerLink]="routes.productList">{{-->
-<!--                dashboard2.ProductName-->
-<!--              }}</a>-->
             </td>
             <td>{{ dashboard2.BrandName }}</td>
             <td>{{ dashboard2.CategoryName }}</td>
