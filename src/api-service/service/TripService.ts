@@ -41,4 +41,9 @@ export class TripService {
     return this.http.post<ApiResultFormatModel>(this.BASEURL + 'trip/endTripRequest', payload, { headers });
   }
 
+  public getTripReport(payload: any): Observable<ApiResultFormatModel> {
+    const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
+    return this.http.post<ApiResultFormatModel>(this.BASEURL + 'report/admin/trip', payload, { headers });
+  }
+
 }
