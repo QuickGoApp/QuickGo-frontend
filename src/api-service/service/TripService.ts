@@ -31,5 +31,14 @@ export class TripService {
     const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
     return this.http.post<ApiResultFormatModel>(this.BASEURL + 'trip/cancelTripRequest', payload, { headers });
   }
+  public acceptTripRequest(payload: any): Observable<ApiResultFormatModel> {
+    const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
+    return this.http.post<ApiResultFormatModel>(this.BASEURL + 'trip/acceptTripRequest', payload, { headers });
+  }
+
+  public endTripRequest(payload: any): Observable<ApiResultFormatModel> {
+    const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
+    return this.http.post<ApiResultFormatModel>(this.BASEURL + 'trip/endTripRequest', payload, { headers });
+  }
 
 }

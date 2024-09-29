@@ -71,6 +71,13 @@
           </div>
         </div>
       </div>
+      <div class="col-lg-3 col-sm-6 col-12">
+        <div class="form-group">
+          <label class="required">Vehicle Image</label>
+          <input type="file" (change)="onFileChange($event)" accept="image/*" class="form-control" />
+          <img *ngIf="imageUrl" [src]="imageUrl" alt="Vehicle Image" class="img-preview" />
+        </div>
+      </div>
 
       <div class="col-lg-12">
         <button [disabled]="form.invalid" class="btn btn-submit mr-2" type="submit">Save</button>

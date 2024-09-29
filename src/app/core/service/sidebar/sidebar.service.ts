@@ -127,10 +127,10 @@ export class SidebarService {
               subRoutes: [],
             },
             {
-              menuValue: 'Update Driver',
+              menuValue: 'Update Profile',
               hasSubRoute: false,
               showSubRoute: false,
-              route: routes.updateDriver,
+              route: routes.updateProfile,
               subRoutes: [],
             },
             {

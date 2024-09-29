@@ -41,9 +41,10 @@
             <div class="form-group">
               <label class="required">Status</label>
               <mat-select placeholder="Status">
-                <mat-option >
-                  aaaaaaaaa
-                </mat-option>
+                <mat-option value="COMPLETED" >COMPLETED</mat-option>
+                <mat-option value="REQUEST" >REQUEST</mat-option>
+                <mat-option value="ACCEPTED" >ACCEPTED</mat-option>
+                <mat-option value="CANCELED" >CANCELED</mat-option>
               </mat-select>
             </div>
           </div>
@@ -72,24 +73,25 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+        <tr *ngFor="let report of tripReports">
+          <td>{{ report.driverCode }}</td>
+          <td>{{ report.passengerCode }}</td>
+          <td>{{ report.tripDate | date:'shortDate' }}</td>
+          <td>{{ report.tripDate | date:'shortDate' }}</td>
+          <td>{{ report.status }}</td>
+          <td>
+            <!-- Add your action buttons here -->
+          </td>
         </tr>
-        <tr >
-          <td colspan="12">
+        <tr *ngIf="tripReports.length === 0">
+          <td colspan="6">
             <h5 class="no-record">No matching records found</h5>
           </td>
         </tr>
         </tbody>
       </table>
-
       <app-custom-pagination></app-custom-pagination>
     </div>
+
   </div>
 </div>
