@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { TripReportRequestModel } from 'src/api-service/model/report/TripReportRequestModel';
-import { ReportService } from 'src/api-service/service/ReportService';
+import {TripService} from "../../../../api-service/service/TripService";
+import {TripReportModel} from "../../../../api-service/model/TripReportModel";
 
 @Component({
   selector: 'app-trip-report',
@@ -8,35 +8,38 @@ import { ReportService } from 'src/api-service/service/ReportService';
   styleUrls: ['./trip-report.component.scss']
 })
 export class TripReportComponent {
-  fromDate: any;
-  trips = [];
+  fromDate: Date = new Date(); // Initialize current date
+  toDate: Date = new Date();   // Initialize current date
+  driverCode = 'ALL';     // Initialize empty driver code
+  passengerCode = 'ALL';     // Initialize empty driver code
+  status = '';         // Initialize empty status
+  tripReports: TripReportModel[] = []; // Store fetched trip reports
 
-  constructor(private reportService: ReportService) {
-    this.fromDate= new  Date();
-    this.getTripReport();
-  }
+  constructor(private tripService: TripService) {}
 
-  private getTripReport() {
+  // Method to search trip reports
+  searchTripReports() {
+    // Create a payload object for the request
+    const payload = {
+      fromDate: this.fromDate,
+      toDate: this.toDate,
+      driverCode: this.driverCode,
+      passengerCode:this.passengerCode,
+      status: this.status
+    };
 
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
-
-    const payload = new TripReportRequestModel(
-      startOfDay,
-      endOfDay,
-      'ALL',
-      'ALL',
-      'ALL'
+    // Call the trip service method to fetch reports
+    this.tripService.getTripReport(payload).subscribe(
+      (response) => {
+        if (response.statusCode === 200) {
+          this.tripReports = response.data; // Update tripReports array with data
+        } else {
+          console.error('Error: Failed to fetch reports', response);
+        }
+      },
+      (error) => {
+        console.error('Error fetching trip reports', error);
+      }
     );
-
-    this.reportService.getTripReport(payload).subscribe((data) => {
-      if (data.statusCode === 200) {
-        this.trips = data.data;
-      } 
-    });
   }
-
 }

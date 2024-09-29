@@ -67,7 +67,7 @@ export class routes {
     return this.users + '/user-privilege';
   }
 
-  public static get updateDriver(): string {
+  public static get updateProfile(): string {
     return this.users + '/update-profile';
   }
   public static get addVehicle(): string {
