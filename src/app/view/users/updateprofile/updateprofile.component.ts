@@ -2,10 +2,7 @@ import { Component } from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import Swal from "sweetalert2";
 import { SweetalertService } from 'src/app/shared/sweetalert/sweetalert.service';
-import {WebstorgeService} from "../../../shared/webstorge.service";
-import {AuthService} from "../../../../api-service/service/AuthService";
-import {DriverService} from "../../../../api-service/service/DriverService";
-import {RoleService} from "../../../../api-service/service/RoleService";
+import {UserService} from "../../../../api-service/service/UserService";
 
 @Component({
   selector: 'app-updateprofile',
@@ -13,22 +10,20 @@ import {RoleService} from "../../../../api-service/service/RoleService";
   styleUrls: ['./updateprofile.component.scss']
 })
 export class UpdateprofileComponent {
-  existingUserId: number | null = null;
   show = false;
-  showFilter = false;
-  initChecked = false;
+
+
   private sweetalert: SweetalertService;
   password='password'
+  userDetail: any = null; // Store the submitted cart details
 
   form = new FormGroup({
     name: new FormControl('', [Validators.required]),
     username: new FormControl('', [Validators.required]),
-    user_code: new FormControl('', [Validators.required]),
     mobile_num: new FormControl('', [Validators.required, Validators.maxLength(10)]),
     email: new FormControl('', [Validators.required, Validators.email]),
     address: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
-    selectedRole: new FormControl(''),
   });
 
 
@@ -46,44 +41,27 @@ export class UpdateprofileComponent {
     }
   }
 
-  constructor(private storage: WebstorgeService, private authService: AuthService,
-              private driverService:DriverService,private roleService: RoleService) {
+  constructor(private userService:UserService) {
+    this.findUserDetailByCode();
   }
 
-  // ngOnInit(): void {
-  //   this.loadDrivers();
-  //   this.loadRoles();
-  // }
 
   onSubmit() {
     if (this.form.valid) {
       const userData = this.form.value;
+      userData['id']=this.userDetail.id;
+      this.updateUser( userData);
 
-      if (this.existingUserId) {
-        this.updateUser(this.existingUserId, userData);
-      }
-      // else {
-      //   this.authService.addUser(userData).subscribe(
-      //     data => {
-      //       console.log('User added successfully', data);
-      //       Swal.fire('Success', 'User added successfully!', 'success');
-      //       this.loadDrivers();
-      //     },
-      //     error => {
-      //       console.error('Error:', error);
-      //       Swal.fire('Error', 'Failed to save user', 'error');
-      //     }
-      //   );
-      // }
+
     }
     else {
       this.form.markAllAsTouched();
     }
   }
 
-  updateUser(existUserId: number, userData: any) {
+  updateUser( userData: any) {
     if (this.form.valid) {
-      this.driverService.updateUser(existUserId, userData).subscribe(
+      this.userService.updateUser( userData).subscribe(
         data => {
           console.log('Response:', data);
           Swal.fire('Success', 'Driver Update Success!', 'success');
@@ -98,4 +76,23 @@ export class UpdateprofileComponent {
     }
   }
 
+  private findUserDetailByCode() {
+    const payload={
+      user_code:sessionStorage.getItem("userId")
+    }
+    this.userService.findUserDetailByCode(payload).subscribe(value => {
+      if (value.statusCode==200){
+        this.userDetail = value.data;
+        // Set form values from the retrieved user details
+        this.form.patchValue({
+          name: this.userDetail.name,
+          username: this.userDetail.username,
+          mobile_num: this.userDetail.mobile_num,
+          email: this.userDetail.email,
+          address: this.userDetail.address,
+          password: ''
+        });
+      }
+    })
+  }
 }

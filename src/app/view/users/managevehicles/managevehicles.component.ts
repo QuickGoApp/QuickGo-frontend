@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import { routes } from 'src/app/core/routes-path/routes';
+import {routes} from 'src/app/core/routes-path/routes';
 import {FormControl, FormGroup, ValidationErrors, Validators} from "@angular/forms";
 import Swal from "sweetalert2";
 import {VehicleService} from "../../../../api-service/service/VehicleService";
@@ -7,6 +7,8 @@ import {DriverService} from "../../../../api-service/service/DriverService";
 import {MatTableDataSource} from "@angular/material/table";
 import {userList} from "../../../shared/model/page.model";
 import {Sort} from "@angular/material/sort";
+import {el} from "@fullcalendar/core/internal-common";
+
 interface data {
   value: string;
 }
@@ -16,20 +18,24 @@ interface data {
   templateUrl: './managevehicles.component.html',
   styleUrls: ['./managevehicles.component.scss']
 })
-export class ManagevehiclesComponent implements OnInit{
+export class ManagevehiclesComponent implements OnInit {
   public routes = routes;
   existingVehicleId: number | null = null;
   show = false;
   public tableData = [];
-  password='password'
+  password = 'password'
   drivers: any[] = [];  //Store the list of drivers
   selectedDriver: any;
   showFilter = false;
   public searchDataValue = '';
   dataSource!: MatTableDataSource<userList>;
   public selectedValue1 = '';
-  selectedList1: data[] = [{ value: 'Disable' }, { value: 'Enable' }];
+  selectedList1: data[] = [{value: 'Disable'}, {value: 'Enable'}];
   initChecked = false;
+
+  imageUrl: string | ArrayBuffer | null = null; // To store the image preview URL
+  selectedFile: File | null = null; // To store the selected file
+
 
   form = new FormGroup({
     vehicle_name: new FormControl(''),
@@ -39,14 +45,32 @@ export class ManagevehiclesComponent implements OnInit{
     vehicle_conditions: new FormControl(''),
     seats: new FormControl(''),
     selectedDriver: new FormControl(''),
+    image: new FormControl(''),
+    icon: new FormControl(''),
+
   });
 
   roles: string[] = [];
   selectedRole: string;
 
   constructor(private vehicleService: VehicleService,
-              private driverService:DriverService) {
+              private driverService: DriverService) {
   }
+
+  onFileChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+
+      // Display the image preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imageUrl = e.target?.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
 
   date = new Date();
 
@@ -69,6 +93,7 @@ export class ManagevehiclesComponent implements OnInit{
     this.loadVehicles();
 
   }
+
   get f() {
     return this.form.controls;
   }
@@ -102,7 +127,7 @@ export class ManagevehiclesComponent implements OnInit{
   //Function to load vehicles
   loadDrivers() {
     this.driverService.getDrivers().subscribe((response: any) => {
-      if(response.statusCode==200){
+      if (response.statusCode == 200) {
         this.drivers = response.data;
       }
 
@@ -115,7 +140,10 @@ export class ManagevehiclesComponent implements OnInit{
   loadVehicles() {
     this.vehicleService.getVehicles().subscribe(
       (response: any) => {
-        this.tableData = response;
+        if (response.statusCode == 200) {
+          this.tableData = response.data;
+        }
+
       },
       (error) => {
         console.error('Error loading vehicles:', error);
@@ -125,8 +153,8 @@ export class ManagevehiclesComponent implements OnInit{
   }
 
   onDriverChange(event: any) {
-    console.log('Selected Driver ID:', event.value);  // Handle the selected driver
     this.selectedDriver = event.value;
+    console.log('Selected Driver ID:', event.value);  // Handle the selected driver
   }
 
   onClick() {
@@ -155,35 +183,70 @@ export class ManagevehiclesComponent implements OnInit{
   }
 
   onSubmit() {
+    console.log("urllll " + this.imageUrl)
+    console.log("image file " + this.selectedFile)
     if (this.form.valid) {
       const vehicleData = this.form.value;
 
       if (this.existingVehicleId) {
         this.updateVehicle(this.existingVehicleId, vehicleData);
       } else {
-        this.vehicleService.addVehicle(vehicleData).subscribe(
-          data => {
-            console.log('Vehicle added successfully', data);
-            Swal.fire('Success', 'Vehicle added successfully!', 'success');
-            this.loadVehicles();
-          },
-          error => {
-            console.error('Error:', error);
-            Swal.fire('Error', 'Failed to save vehicle', 'error');
+
+        this.vehicleService.uploadImage(this.selectedFile).subscribe(response => {
+          if (response.statusCode == 200) {
+            this.form.get("image")?.setValue(response.data);
+
+            // Set the vehicle icon based on the selected role
+            if (this.selectedRole === "three_wheel") {
+              this.form.get("icon")?.setValue("assets/img/vehicle/tuckicon.png");
+            } else if (this.selectedRole === "car") {
+              this.form.get("icon")?.setValue("assets/img/vehicle/caricon.png");
+            } else if (this.selectedRole === "bike") {
+              this.form.get("icon")?.setValue("assets/img/vehicle/bicicon.png");
+            }
+            // Now add the image URL and icon to the vehicleData object
+            vehicleData['image'] = response.data;
+            vehicleData['icon'] = this.form.get("icon")?.value;
+
+            this.saveVehicleDetails(vehicleData);
           }
-        );
+
+        });
+
       }
     } else {
       this.form.markAllAsTouched();
     }
   }
 
+  private saveVehicleDetails(vehicleData: any) {
+    console.log("save image data  " + JSON.stringify(vehicleData))
+
+    // vehicle data add variable "image" and set response.data
+    this.vehicleService.addVehicle(vehicleData).subscribe(
+      response => {
+        if (response.statusCode == 200) {
+          Swal.fire('Success', 'Vehicle added successfully!', 'success');
+          this.loadVehicles();
+        } else {
+          Swal.fire('Error', response.message, 'error');
+        }
+      },
+      error => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'Failed to save vehicle', 'error');
+      }
+    );
+
+  }
+
   updateVehicle(existVehicleId: number, userData: any) {
     if (this.form.valid) {
       this.vehicleService.updateVehicle(existVehicleId, userData).subscribe(
-        data => {
-          console.log('Response:', data);
-          Swal.fire('Success', 'Vehicle Updated Successfully!', 'success');
+        response => {
+          if (response.statusCode == 200) {
+            Swal.fire('Success', 'Vehicle Updated Successfully!', 'success');
+          }
         },
         error => {
           console.error('Error:', error);

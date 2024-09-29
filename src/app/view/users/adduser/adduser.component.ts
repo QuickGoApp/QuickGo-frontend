@@ -12,6 +12,7 @@ import {RoleService} from "../../../../api-service/service/RoleService";
 import {Sort} from "@angular/material/sort";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import {UserService} from "../../../../api-service/service/UserService";
 interface data {
   value: string;
 }
@@ -51,19 +52,22 @@ export class AdduserComponent implements OnInit{
     this.selectedRole = event.value; // Logic to handle role change
   }
   constructor(private storage: WebstorgeService, private authService: AuthService,
-              private driverService:DriverService,private roleService: RoleService) {
+              private driverService:DriverService,private roleService: RoleService,private userService:UserService) {
+
+    this.loadRoles();
   }
 
 
   ngOnInit(): void {
-    this.loadDrivers();
-    this.loadRoles();
+    this.loadUsers();
+
   }
 
   loadRoles() {
     this.roleService.getAllRollList().subscribe(
       (response: any) => {
         this.roles = response.data;
+        console.log(JSON.stringify("role "+ this.roles))
       },
       (error) => {
         console.error('Error fetching roles:', error);
@@ -73,10 +77,13 @@ export class AdduserComponent implements OnInit{
 
 
   //Function to load drivers
-  loadDrivers() {
-    this.driverService.getDrivers().subscribe(
+  loadUsers() {
+    this.userService.getUsers().subscribe(
       (response: any) => {
-        this.tableData = response;
+        if(response.statusCode==200){
+          this.tableData = response.data;
+        }
+
       },
       (error) => {
         console.error('Error loading drivers:', error);
@@ -117,7 +124,7 @@ export class AdduserComponent implements OnInit{
         this.driverService.deleteUser(userId).subscribe(
           () => {
             Swal.fire('Deleted!', 'User Deleted Successfully.', 'success');
-            this.loadDrivers();
+            this.loadUsers();
           },
           error => {
             console.error('Error deleting user:', error);
@@ -162,7 +169,7 @@ export class AdduserComponent implements OnInit{
   }
 
   onUpdate(users: any) {
-    const selectedRole = this.roles.find(role => role.value === users.role_id);
+    const selectedRole = this.roles.find(role => role.value === users.role_name);
     this.form.patchValue({
       name: users.name || '',
       username: users.username || '',
@@ -183,22 +190,21 @@ export class AdduserComponent implements OnInit{
       // Ensure that the role is passed as an array
       const userData = {
         ...formValues,
+        id:this.existingUserId,
         role: [this.selectedRole] // Pass selected role as an array
       };
 
-      console.log("user data: " + JSON.stringify(userData));
-
       // Check if it's an update or a new user
       if (this.existingUserId) {
-        this.updateUser(this.existingUserId, userData);
+        this.updateUser( userData);
       } else {
         this.authService.addUser(userData).subscribe(
           data => {
             Swal.fire('Success', 'User added successfully!', 'success');
-            this.loadDrivers();
+            this.loadUsers();
           },
           error => {
-            console.error('Error:', error);
+            console.error('Error:', error.message);
             Swal.fire('Error', 'Failed to save user', 'error');
           }
         );
@@ -209,9 +215,9 @@ export class AdduserComponent implements OnInit{
     }
   }
 
-  updateUser(existUserId: number, userData: any) {
+  updateUser(userData: any) {
     if (this.form.valid) {
-      this.driverService.updateUser(existUserId, userData).subscribe(
+      this.userService.updateUser(userData).subscribe(
         data => {
           console.log('Response:', data);
           Swal.fire('Success', 'Driver Update Success!', 'success');

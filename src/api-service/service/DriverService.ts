@@ -42,13 +42,6 @@ export  class DriverService {
     return this.http.get<any[]>(this.BASEURL + 'driver/drivers', { headers });
   }
 
-  updateUser(existUserId: number, userData: any) {
-    const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
-    console.log('Sending PUT request to:', `${this.BASEURL}+'auth/drivers/'+${existUserId}`);
-    console.log('Payload:', userData);
-    return this.http.put<any>(this.BASEURL+'driver/updateDriver/'+existUserId, userData, { headers });
-
-  }
 
   deleteUser(userId: number) {
     const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));

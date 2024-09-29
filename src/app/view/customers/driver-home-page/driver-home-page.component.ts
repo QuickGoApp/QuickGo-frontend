@@ -14,7 +14,7 @@ import {DriverService} from "../../../../api-service/service/DriverService";
 export class DriverHomePageComponent implements OnInit, OnDestroy {
 
   protected readonly routes = routes;
-  public totalPrice;
+  public totalPrice:any;
   public isNotification = true;
 
   private map!: google.maps.Map;
@@ -27,6 +27,7 @@ export class DriverHomePageComponent implements OnInit, OnDestroy {
 
   private locationInterval: any;  // Interval to fetch geolocation
 
+  private acceptNotificaitonValues:any;
 
   notifications: any[] = [];
 
@@ -165,6 +166,24 @@ export class DriverHomePageComponent implements OnInit, OnDestroy {
     this.isNotification = false;
     console.log('Notification accepted:', this.notifications[index]);
     const notification = this.notifications[index];
+    this.acceptNotificaitonValues = this.notifications[index];
+
+    this.totalPrice= notification.totalAmount;
+
+    const payload={
+      driveCode:notification.driveCode,
+      passengerCode:notification.passengerCode
+    }
+    this.tripService.acceptTripRequest(payload).subscribe(value => {
+      if (value.statusCode==200){
+      this.loadDirection(notification);
+      }
+    });
+
+
+  }
+
+  private loadDirection(notification:any){
 
     // Get the pickup and drop-off coordinates from the notification
     const pickupLat = notification.pickupLat;
@@ -197,7 +216,6 @@ export class DriverHomePageComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.totalPrice = notification.totalPrice.toFixed(2);
   }
 
 
@@ -211,23 +229,31 @@ export class DriverHomePageComponent implements OnInit, OnDestroy {
 
     this.loadNotification();
 
-    console.log('Trip stopped:', this.notifications[1]);
+    console.log('Trip stopped:', this.acceptNotificaitonValues);
 
-    const notification = this.notifications[1];
+    const notification = this.acceptNotificaitonValues;
 
-    // Assuming there's a backend call to stop the trip or handle the logic
-    // For demonstration purposes, we'll just set the status to 'COMPLETED' locally
-
-    notification.status = 'COMPLETED'; // You might also update the backend here
-
-    // You can display a message or alert to the user about the trip status
-    Swal.fire({
-      title: 'Trip Stopped',
-      text: 'The trip has been successfully stopped.',
-      icon: 'success',
-      confirmButtonText: 'OK'
+    const payload={
+      driveCode:notification.driveCode,
+      passengerCode:notification.passengerCode
+    }
+    this.tripService.endTripRequest(payload).subscribe(value => {
+      if (value.statusCode==200){
+        Swal.fire({
+          title: 'Trip Stopped',
+          text: 'The trip has been successfully stopped.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      }else {
+        Swal.fire({
+          title: 'Error',
+          text: 'Something went wrong',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
     });
-
 
   }
 
@@ -239,8 +265,6 @@ export class DriverHomePageComponent implements OnInit, OnDestroy {
       latitude: latitude,
       longitude: longitude
     };
-
-    console.log("Saving geolocation:", latitude, longitude);
 
     this.driverService.saveDriverGeoLocation(payload).subscribe(value => {
       console.log("Geo-location saved successfully.");
