@@ -4,8 +4,7 @@
     <h6>Trip</h6>
   </div>
   <div class="page-btn">
-    <a class="btn btn-added"
-    ><img src="../../../../assets/img/icons/plus.svg" alt="img" />Trip Report</a>
+    <a class="btn btn-added"><img src="../../../../assets/img/icons/plus.svg" alt="img" />Trip Report</a>
   </div>
 </div>
 
@@ -28,20 +27,20 @@
           <div class="col-lg-2 col-sm-6 col-12">
             <div class="form-group">
               <label class="required">To Date</label>
-              <ngx-datepicker  placeholder="To Date"></ngx-datepicker>
+              <ngx-datepicker placeholder="To Date"></ngx-datepicker>
             </div>
           </div>
           <div class="col-lg-2 col-sm-6 col-12">
             <div class="form-group">
               <label class="required">Driver Code</label>
-              <input type="text" placeholder="Enter Driver Code"  />
+              <input type="text" placeholder="Enter Driver Code" />
             </div>
           </div>
           <div class="col-lg-2 col-sm-6 col-12">
             <div class="form-group">
               <label class="required">Status</label>
               <mat-select placeholder="Status">
-                <mat-option >
+                <mat-option>
                   aaaaaaaaa
                 </mat-option>
               </mat-select>
@@ -57,35 +56,29 @@
         </div>
       </div>
     </div>
-
-    <!-- /Filter -->
     <div class="table-responsive">
       <table matSort matSortActive="Sno" matSortDirection="asc" matSortDisableClear class="table datanew">
         <thead>
-        <tr>
-          <th mat-sort-header="DriverCode">Driver Code</th>
-          <th mat-sort-header="PassengerCode">Passenger Code</th>
-          <th mat-sort-header="FromDate">From Date</th>
-          <th mat-sort-header="ToDate">To Date</th>
-          <th mat-sort-header="Status">Status</th>
-          <th>Action</th>
-        </tr>
+          <tr>
+            <th mat-sort-header="driverCode">Driver Code</th>
+            <th mat-sort-header="driverName">Driver Name</th>
+            <th mat-sort-header="passengerCode">Passenger Code</th>
+            <th mat-sort-header="passengerName">Passenger Name</th>
+            <th mat-sort-header="tripDate">Trip Date</th>
+            <th mat-sort-header="status">Status</th>
+            <th mat-sort-header="amount">Amount</th>
+          </tr>
         </thead>
         <tbody>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr >
-          <td colspan="12">
-            <h5 class="no-record">No matching records found</h5>
-          </td>
-        </tr>
+          <tr *ngFor="let trip of trips">
+            <td>{{ trip.driverCode }}</td>
+            <td>{{ trip.driverName }}</td>
+            <td>{{ trip.passengerCode }}</td>
+            <td>{{ trip.passengerName }}</td>
+            <td>{{ trip.tripDate | date: 'short' }}</td>
+            <td>{{ trip.status }}</td>
+            <td>{{ trip.amount | currency }}</td>
+          </tr>
         </tbody>
       </table>
 

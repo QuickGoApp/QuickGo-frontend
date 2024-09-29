@@ -3,20 +3,21 @@ import { Observable } from "rxjs";
 import { ApiResultFormatModel } from "../../api-service/model/common/ApiResultFormatModel";
 import { Injectable } from "@angular/core";
 import { environment } from "../../environments/environment.prod";
+import { TripReportRequestModel } from "../model/report/TripReportRequestModel";
 
 @Injectable({
     providedIn: 'root',
 })
-export class DashboardService {
+export class ReportService {
 
     BASEURL = '';
     constructor(private http: HttpClient) {
         this.BASEURL = environment.baseURL;
     }
 
-    public getDashboardAnalytics(): Observable<ApiResultFormatModel> {
+    public getTripReport(payload: TripReportRequestModel): Observable<ApiResultFormatModel> {
         const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
-        return this.http.get<ApiResultFormatModel>(this.BASEURL + 'dashboard/admin/analytics', { headers });
+        return this.http.post<ApiResultFormatModel>(this.BASEURL + 'report/admin/trip', payload, { headers });
     }
 
 }

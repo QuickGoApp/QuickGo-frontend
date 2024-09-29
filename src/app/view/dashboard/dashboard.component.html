@@ -58,25 +58,24 @@
         matSortDisableClear class="table">
         <thead>
           <tr>
-            <th mat-sort-header="Test">Test</th>
-            <th mat-sort-header="Test">Test</th>
-            <th mat-sort-header="Test">Test</th>
-            <th mat-sort-header="Test">Test</th>
-            <th mat-sort-header="Test">Test</th>
-            <th mat-sort-header="Test">Test</th>
+            <th mat-sort-header="driverCode">Driver Code</th>
+            <th mat-sort-header="driverName">Driver Name</th>
+            <th mat-sort-header="passengerCode">Passenger Code</th>
+            <th mat-sort-header="passengerName">Passenger Name</th>
+            <th mat-sort-header="tripDate">Trip Date</th>
+            <th mat-sort-header="status">Status</th>
+            <th mat-sort-header="amount">Amount</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let dashboard2 of expiredProducts">
-            <td>{{ dashboard2.SNo }}</td>
-            <td>
-              <a href="javascript:void(0);">{{ dashboard2.ProductCode }}</a>
-            </td>
-            <td class="productimgname">
-            </td>
-            <td>{{ dashboard2.BrandName }}</td>
-            <td>{{ dashboard2.CategoryName }}</td>
-            <td>{{ dashboard2.ExpiryDate }}</td>
+          <tr *ngFor="let trip of trips">
+            <td>{{ trip.driverCode }}</td>
+            <td>{{ trip.driverName }}</td>
+            <td>{{ trip.passengerCode }}</td>
+            <td>{{ trip.passengerName }}</td>
+            <td>{{ trip.tripDate | date: 'short' }}</td>
+            <td>{{ trip.status }}</td>
+            <td>{{ trip.amount | currency }}</td>
           </tr>
         </tbody>
       </table>

@@ -12,8 +12,10 @@ import {
   ApexLegend,
   ApexFill,
 } from 'ng-apexcharts';
+import { TripReportRequestModel } from 'src/api-service/model/report/TripReportRequestModel';
 import { DashboardService } from 'src/api-service/service/DashboardService';
-import {  SettingsService } from 'src/app/core/core.index';
+import { ReportService } from 'src/api-service/service/ReportService';
+import { SettingsService } from 'src/app/core/core.index';
 
 export type ChartOptions = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,6 +56,8 @@ export class DashboardComponent {
   public totalPassengers = 0;
   public totalActiveTrips = 0;
   public totalCompletedTrips = 0;
+
+  public trips = [];
 
 
   public chartOptions: Partial<ChartOptions>;
@@ -124,7 +128,7 @@ export class DashboardComponent {
     },
   ];
 
-  constructor( private setting : SettingsService, private dashboardService: DashboardService) {
+  constructor(private setting: SettingsService, private dashboardService: DashboardService, private reportService: ReportService) {
     this.chartOptions = {
       series: [
         {
@@ -205,20 +209,48 @@ export class DashboardComponent {
       },
     };
     this.getDashboardAnalytics();
+    this.getTripReport();
+
   }
 
   private getDashboardAnalytics() {
     this.dashboardService.getDashboardAnalytics().subscribe((data) => {
-      if  (data.statusCode === 200) {
-          this.totalDrivers = data.data.totalDrivers;
-          this.totalPassengers = data.data.totalPassengers;
-          this.totalActiveTrips = data.data.totalActiveTrips;
-          this.totalCompletedTrips = data.data.totalCompletedTrips;
-      }else {
+      if (data.statusCode === 200) {
+        this.totalDrivers = data.data.totalDrivers;
+        this.totalPassengers = data.data.totalPassengers;
+        this.totalActiveTrips = data.data.totalActiveTrips;
+        this.totalCompletedTrips = data.data.totalCompletedTrips;
+      } else {
         Swal.fire('Error', data.message, 'error');
       }
     });
   }
+
+  private getTripReport() {
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const payload = new TripReportRequestModel(
+      startOfDay,
+      endOfDay,
+      'ALL',
+      'ALL',
+      'ALL'
+    );
+
+    this.reportService.getTripReport(payload).subscribe((data) => {
+      if (data.statusCode === 200) {
+        this.trips = data.data;
+      } else {
+        Swal.fire('Error', data.message, 'error');
+      }
+    });
+  }
+
 
   public sortRecentlyAddedProducts(sort: Sort) {
     const data = this.recentlyAddedProducts.slice();
