@@ -120,6 +120,7 @@ export class PassengerHomePageComponent implements OnInit {
   }
 
   onVehicleSelect(type: string): void {
+    console.log("Selected vehicle type  : " + type);
     // Toggle the selected vehicle (select/deselect)
     if (this.activeVehicle === type) {
       this.activeVehicle = null; // Deselect if clicked again
@@ -238,6 +239,7 @@ export class PassengerHomePageComponent implements OnInit {
         title: location.name
         // active vehicle click
       }).addListener('click', () => {
+        console.log("radios vehicle click : " +JSON.stringify(location))
         // Handle marker click event
         // Set the clicked vehicle's details to the submittedCart object
         this.submittedCart = location;
@@ -524,70 +526,59 @@ export class PassengerHomePageComponent implements OnInit {
   }
 
 
-
-  private retryCount = 0;
-
   driversAndLocation(pickupLatLng: google.maps.LatLng): void {
     const { vehicleType } = this.locationForm.value;
     const passenger = {
       latitude: pickupLatLng.lat(),
       longitude: pickupLatLng.lng(),
       type: vehicleType,
-      radius: 2 // Initial radius
+      radius:3 // Initial radius
     };
+    console.log("first time passenger data :" + JSON.stringify(passenger))
 
-    console.log("pickup lat: " + pickupLatLng.lat());
-    console.log("pickup lng: " + pickupLatLng.lng());
-    console.log("vehicle type: " + vehicleType);
-
-    this.driverService.getDriversAndLocation(passenger).subscribe((response) => {
-      console.log('API Response:', response);
-      if (response.statusCode === 200) {
-        if (response.data.length > 0) {
-          // Stop the polling if we get valid data
-          console.log('Valid response received. Stopping further calls.');
-          this.driverAndLocationDetails(response.data);
-          this.retryCount = 0; // Reset retryCount after valid response
-          return; // Stop further execution
-        } else {
-          // If the response is empty, increase the radius and retry
-          this.retryCount++; // Use `this.retryCount`
-          if (this.retryCount < 3) {
-            // Retry up to 3 times
-            console.log('No valid response. Retrying in 10 seconds... (Attempt ' + this.retryCount + ')');
-            passenger.radius = 5; // Increase the radius for the next attempt
-
-            setTimeout(() => {
-              this.driversAndLocation(pickupLatLng); // Recursive call after 10 seconds
-            }, 10000); // 10 second delay
+    let retryCount = 0;
+    const intervalId = setInterval(() => {
+      this.driverService.getDriversAndLocation(passenger).subscribe((response) => {
+        console.log('get Driver and Location API Response:', response);
+        if (response.statusCode === 200) {
+          if (response.data.length > 0) {
+            console.log('Valid response received. Stopping further calls.');
+            this.driverAndLocationDetails(response.data);
+            clearInterval(intervalId); // Stop further polling after valid response
           } else {
-            // After 3 attempts, stop retrying and show an error message
-            console.log('No drivers available after 3 attempts.');
-            Swal.fire({
-              title: 'No Drivers Available',
-              text: 'We were unable to find drivers in your area after multiple attempts. Please try again later.',
-              icon: 'error',
-              confirmButtonText: 'OK'
-            });
-            this.retryCount = 0; // Reset retryCount after failing
+            retryCount++;
+            if (retryCount < 3) {
+              console.log('No valid response. Retrying... (Attempt ' + retryCount + ')');
+              passenger.radius = 5; // Increase the radius for the next attempt
+              console.log("passenger data  :" + JSON.stringify(passenger));
+            } else {
+              console.log('No drivers available after 3 attempts.');
+              Swal.fire({
+                title: 'No Drivers Available',
+                text: 'We were unable to find drivers in your area after multiple attempts. Please try again later.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+              });
+              clearInterval(intervalId); // Stop after 3 failed attempts
+            }
           }
         }
-      }
-    }, error => {
-      Swal.fire({
-        title: 'Warning!',
-        text: 'Something went wrong',
-        icon: 'warning',
-        confirmButtonText: 'OK'
+      }, error => {
+        Swal.fire({
+          title: 'Warning!',
+          text: 'Something went wrong',
+          icon: 'warning',
+          confirmButtonText: 'OK'
+        });
+        clearInterval(intervalId); // Stop polling if there's an error
       });
-    });
+    }, 5000); // Call the function every 10 seconds
   }
-
 
 
   driverAndLocationDetails(payload: any) {
     this.driverService.getGeolocationDriverDetails(payload).subscribe((response: ApiResultFormatModel) => {
-      console.log("driverAndLocationDetails >> " + JSON.stringify(response));
+      console.log("get location vice active vehicle list  : " + JSON.stringify(response));
       if (response.statusCode === 200) {
         this.activeVehicleLocations = response.data.map((vehicle: any) => {
           return {

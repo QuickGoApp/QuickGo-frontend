@@ -126,7 +126,7 @@ export class ManagevehiclesComponent implements OnInit {
 
   //Function to load vehicles
   loadDrivers() {
-    this.driverService.getDrivers().subscribe((response: any) => {
+    this.driverService.getUnAllocateDrivers().subscribe((response: any) => {
       if (response.statusCode == 200) {
         this.drivers = response.data;
       }
@@ -190,6 +190,7 @@ export class ManagevehiclesComponent implements OnInit {
 
       if (this.existingVehicleId) {
         this.updateVehicle(this.existingVehicleId, vehicleData);
+        this.loadVehicles();
       } else {
 
         this.vehicleService.uploadImage(this.selectedFile).subscribe(response => {
@@ -209,6 +210,7 @@ export class ManagevehiclesComponent implements OnInit {
             vehicleData['icon'] = this.form.get("icon")?.value;
 
             this.saveVehicleDetails(vehicleData);
+            this.loadVehicles();
           }
 
         });
@@ -261,7 +263,7 @@ export class ManagevehiclesComponent implements OnInit {
   deleteBtn(vehicleId: number) {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'You will not be able to recover this driver!',
+      text: 'You will not be able to recover this Vehicle!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',

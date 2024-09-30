@@ -15,6 +15,13 @@ const routes: Routes = [
             (m) => m.TripReportComponentModule
           ),
       },
+      {
+        path: 'driver-report',
+        loadChildren: () =>
+          import('./driver-report/driver-report.component.module').then(
+            (m) => m.DriverReportComponentModule
+          ),
+      },
 
     ],
   },

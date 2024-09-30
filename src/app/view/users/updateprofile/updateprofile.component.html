@@ -88,7 +88,7 @@
           </div>
         </div>
         <div class="col-lg-6 col-sm-3 col-12">
-          <p class="card-text mb-3">Rate:
+          <p class="card-text mb-3" *ngIf="!this.isAdmin">Rate:
             <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
               <i class="fa fa-star"
                  [style.color]="star <= userDetail?.overallRating ? '#dea412' : 'lightgray'"

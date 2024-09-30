@@ -4,8 +4,8 @@
     <h6>Trip</h6>
   </div>
   <div class="page-btn">
-    <a class="btn btn-added">
-      <img src="../../../../assets/img/icons/plus.svg" alt="img" />Trip Report
+    <a class="btn btn-added" (click)="exportToExcel()">
+      <img src="../../../../assets/img/icons/plus.svg" alt="img" />Export Trip Report
     </a>
   </div>
 </div>
@@ -73,18 +73,22 @@
         <thead>
         <tr>
           <th mat-sort-header="DriverCode">Driver Code</th>
+          <th mat-sort-header="DriverCode">Driver Name</th>
           <th mat-sort-header="PassengerCode">Passenger Code</th>
-          <th mat-sort-header="FromDate">From Date</th>
-          <th mat-sort-header="ToDate">To Date</th>
+          <th mat-sort-header="PassengerCode">Passenger Name</th>
+          <th mat-sort-header="FromDate">Trip Date</th>
+          <th mat-sort-header="FromDate">Amount</th>
           <th mat-sort-header="Status">Status</th>
         </tr>
         </thead>
         <tbody>
         <tr *ngFor="let report of tripReports">
           <td>{{ report.driverCode }}</td>
+          <td>{{ report.driverName || 'N/A' }}</td>
           <td>{{ report.passengerCode }}</td>
+          <td>{{ report.passengerName || 'N/A' }}</td>
           <td>{{ report.tripDate | date:'shortDate' }}</td>
-          <td>{{ report.tripDate | date:'shortDate' }}</td>
+          <td>{{ report.amount }}</td>
           <td>{{ report.status }}</td>
         </tr>
         <tr *ngIf="tripReports.length === 0">

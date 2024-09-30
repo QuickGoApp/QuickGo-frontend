@@ -26,6 +26,8 @@ export class DriverHomePageComponent implements OnInit, OnDestroy {
   private geoLocationLng;
 
   private locationInterval: any;  // Interval to fetch geolocation
+  private notificationInterval: any;  // Interval to check for notifications
+
 
   private acceptNotificaitonValues:any;
 
@@ -40,13 +42,25 @@ export class DriverHomePageComponent implements OnInit, OnDestroy {
     this.loadNotification();
     // Start interval to save driver geolocation every 10 seconds
     this.startGeoLocationInterval();
+
+    // Start interval to check notifications every 10 seconds
+    this.startNotificationInterval();
+
   }
 
   ngOnDestroy(): void {
-    // Stop the interval when component is destroyed
+    // Stop intervals when component is destroyed
     if (this.locationInterval) {
       clearInterval(this.locationInterval);
     }
+    if (this.notificationInterval) {
+      clearInterval(this.notificationInterval);
+    }
+  }
+  private startNotificationInterval() {
+    this.notificationInterval = setInterval(() => {
+      this.loadNotification();
+    }, 10000);  // 10 seconds
   }
 
   private initializeGoogleMaps() {
@@ -150,6 +164,11 @@ export class DriverHomePageComponent implements OnInit, OnDestroy {
           title: 'New Ride Notification',  // Custom hardcoded title
           message: 'A new ride request from Passenger ',
         }));
+
+        if (this.notifications.length > 0) {
+          // If notifications are not empty, stop the interval
+          clearInterval(this.notificationInterval);
+        }
       } else {
         Swal.fire({
           title: 'Error!',

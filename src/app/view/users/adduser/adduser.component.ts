@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import { routes } from 'src/app/core/routes-path/routes';
+import {Component} from '@angular/core';
+import {routes} from 'src/app/core/routes-path/routes';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import Swal from "sweetalert2";
 import {WebstorgeService} from "../../../shared/webstorge.service";
@@ -10,22 +10,24 @@ import {userList} from "../../../shared/model/page.model";
 import {DriverService} from "../../../../api-service/service/DriverService";
 import {RoleService} from "../../../../api-service/service/RoleService";
 import {Sort} from "@angular/material/sort";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import {UserService} from "../../../../api-service/service/UserService";
+import {saveAs} from "file-saver";
+import * as XLSX from 'xlsx';
+
 interface data {
   value: string;
 }
+
 @Component({
   selector: 'app-adduser',
   templateUrl: './adduser.component.html',
   styleUrls: ['./adduser.component.scss']
 })
-export class AdduserComponent implements OnInit{
+export class AdduserComponent  {
   public selectedValue1 = '';
   existingUserId: number | null = null;
-  selectedList1: data[] = [{ value: 'Disable' }, { value: 'Enable' }];
-  password='password'
+  selectedList1: data[] = [{value: 'Disable'}, {value: 'Enable'}];
+  password = 'password'
   show = false;
   showFilter = false;
   initChecked = false;
@@ -40,7 +42,7 @@ export class AdduserComponent implements OnInit{
   form = new FormGroup({
     name: new FormControl('', [Validators.required]),
     username: new FormControl('', [Validators.required]),
-    mobile_num: new FormControl('', [Validators.required]),
+    mobile_num: new FormControl('', [Validators.required, Validators.pattern('^[0-9]{10}$')]),
     email: new FormControl('', [Validators.required, Validators.email]),
     address: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
@@ -51,23 +53,38 @@ export class AdduserComponent implements OnInit{
   onRoleChange(event: any) {
     this.selectedRole = event.value; // Logic to handle role change
   }
-  constructor(private storage: WebstorgeService, private authService: AuthService,
-              private driverService:DriverService,private roleService: RoleService,private userService:UserService) {
 
-    this.loadRoles();
+  constructor(private storage: WebstorgeService, private authService: AuthService,
+              private driverService: DriverService, private roleService: RoleService, private userService: UserService) {
+
+    this.roleWiseDataLoad();
+
+  }
+
+  private roleWiseDataLoad() {
+    const role = (sessionStorage.getItem("role"))
+    if (role == "ROLE_TELEPHONE_OPERATOR") {
+      this.operatorRole();
+      this.loadPassengers();
+    } else {
+      this.loadRoles();
+      this.loadUsers();
+    }
   }
 
 
-  ngOnInit(): void {
-    this.loadUsers();
-
+  operatorRole() {
+    this.roles = [{
+      "title": "ROLE_PASSENGER",
+      "value": "ROLE_PASSENGER"
+    }];
   }
 
   loadRoles() {
     this.roleService.getAllRollList().subscribe(
       (response: any) => {
         this.roles = response.data;
-        console.log(JSON.stringify("role "+ this.roles))
+        console.log(JSON.stringify("role " + this.roles))
       },
       (error) => {
         console.error('Error fetching roles:', error);
@@ -80,7 +97,7 @@ export class AdduserComponent implements OnInit{
   loadUsers() {
     this.userService.getUsers().subscribe(
       (response: any) => {
-        if(response.statusCode==200){
+        if (response.statusCode == 200) {
           this.tableData = response.data;
         }
 
@@ -91,6 +108,15 @@ export class AdduserComponent implements OnInit{
       }
     );
   }
+
+  loadPassengers(){
+    this.userService.getPassengers().subscribe(value => {
+      if (value.statusCode == 200) {
+        this.tableData = value.data;
+      }
+    })
+  }
+
   onClick() {
     if (this.password === 'password') {
       this.password = 'text';
@@ -105,6 +131,7 @@ export class AdduserComponent implements OnInit{
   get f() {
     return this.form.controls;
   }
+
   viewBtn() {
     this.sweetalert.deleteBtn();
   }
@@ -124,7 +151,7 @@ export class AdduserComponent implements OnInit{
         this.driverService.deleteUser(userId).subscribe(
           () => {
             Swal.fire('Deleted!', 'User Deleted Successfully.', 'success');
-            this.loadUsers();
+            this.roleWiseDataLoad();
           },
           error => {
             console.error('Error deleting user:', error);
@@ -190,18 +217,18 @@ export class AdduserComponent implements OnInit{
       // Ensure that the role is passed as an array
       const userData = {
         ...formValues,
-        id:this.existingUserId,
+        id: this.existingUserId,
         role: [this.selectedRole] // Pass selected role as an array
       };
 
       // Check if it's an update or a new user
       if (this.existingUserId) {
-        this.updateUser( userData);
+        this.updateUser(userData);
       } else {
         this.authService.addUser(userData).subscribe(
           data => {
             Swal.fire('Success', 'User added successfully!', 'success');
-            this.loadUsers();
+            this.roleWiseDataLoad();
           },
           error => {
             console.error('Error:', error.message);
@@ -232,22 +259,27 @@ export class AdduserComponent implements OnInit{
     }
   }
 
-  generatePDF() {
-    const data = document.getElementById('tableContent');
 
-    html2canvas(data!).then(canvas => {
-      const imgWidth = 208;
-      const pageHeight = 295;
-      const imgHeight = canvas.height * imgWidth / canvas.width;
-      const heightLeft = imgHeight;
-
-      const contentDataURL = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4'); // A4 size page of PDF
-      const position = 0;
-
-      pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
-      pdf.save('table-data.pdf'); // Generated PDF will be saved here
-    });
+  // Method to export trip reports to Excel
+  userExportToExcel() {
+    if (this.tableData.length === 0) {
+      Swal.fire('Error', 'No data available to export', 'error');
+      return;
+    }
+    const worksheet = XLSX.utils.json_to_sheet(this.tableData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Trip Reports');
+    const excelBuffer = XLSX.write(workbook, {bookType: 'xlsx', type: 'array'});
+    this.saveAsExcelFile(excelBuffer, 'user-report');
   }
 
+  private saveAsExcelFile(buffer: any, fileName: string): void {
+    const data: Blob = new Blob([buffer], {type: EXCEL_TYPE});
+    saveAs(data, `${fileName}_${new Date().getTime()}.xlsx`);
+  }
+
+
 }
+
+// MIME type for Excel files
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';

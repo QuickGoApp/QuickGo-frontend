@@ -41,6 +41,10 @@ export  class DriverService {
     const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
     return this.http.get<any[]>(this.BASEURL + 'driver/drivers', { headers });
   }
+  getUnAllocateDrivers(): Observable<ApiResultFormatModel> {
+    const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
+    return this.http.get<ApiResultFormatModel>(this.BASEURL + 'driver/drivers/idle', { headers });
+  }
 
 
   deleteUser(userId: number) {
@@ -48,11 +52,12 @@ export  class DriverService {
     return this.http.delete(this.BASEURL+'driver/deleteDriver/'+userId, { headers });
   }
 
-
+  // get taxi dispatcher
  saveDriverGeoLocation(payload: any) {
     return this.http.post<ApiResultFormatModel>(this.DRIVER + 'drivers/location', payload);
   }
 
+  // get taxi dispatcher
   getDriversAndLocation(payload: any) {
     return this.http.post<ApiResultFormatModel>(this.DRIVER + 'drivers/search', payload);
   }

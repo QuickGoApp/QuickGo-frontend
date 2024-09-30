@@ -50,10 +50,10 @@ export class HeaderComponent implements OnInit{
     this.settings.changeTheme.subscribe((res: string) => {
       if (res == 'Dark') {
         this.darkTheme = true;
-        this.logoPath = 'assets/img/logoName.png';
+        this.logoPath = 'assets/img/logo.png';
       } else {
         this.darkTheme = false;
-        this.logoPath = 'assets/img/logoName.png';
+        this.logoPath = 'assets/img/logo.png';
       }
     });
   }

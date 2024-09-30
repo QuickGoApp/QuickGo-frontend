@@ -42,6 +42,7 @@
     "bootstrap": "^5.2.0",
     "chart.js": "^3.6.0",
     "feather-icons": "^4.29.0",
+    "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
     "ng-apexcharts": "^1.7.1",
@@ -63,6 +64,7 @@
     "rxjs": "~7.5.0",
     "sweetalert2": "^11.7.1",
     "tslib": "^2.3.0",
+    "xlsx": "^0.18.5",
     "zebra-browser-print-wrapper": "^0.1.4",
     "zone.js": "~0.12.0"
   },

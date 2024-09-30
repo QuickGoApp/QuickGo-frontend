@@ -1,0 +1,84 @@
+<div class="page-header">
+  <div class="page-title">
+    <h4>Driver Report</h4>
+    <h6>Driver</h6>
+  </div>
+  <div class="page-btn">
+    <a class="btn btn-added" (click)="exportToExcel()">
+      <img src="../../../../assets/img/icons/plus.svg" alt="img" />Export Driver Report
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="table-top">
+      <!-- Other elements like search and filter buttons -->
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card mb-0 border-0">
+      <div class="card-body pb-0">
+        <div class="row">
+          <div class="col-lg-2 col-sm-6 col-12">
+            <div class="form-group">
+              <label class="required">From Date</label>
+              <input type="date" [(ngModel)]="fromDate" class="form-control" placeholder="From Date"/>
+            </div>
+          </div>
+          <div class="col-lg-2 col-sm-6 col-12">
+            <div class="form-group">
+              <label class="required">To Date</label>
+              <input type="date" [(ngModel)]="toDate" class="form-control" placeholder="To Date"/>
+            </div>
+          </div>
+
+          <div class="col-lg-1 col-sm-6 col-12 ms-auto">
+            <div class="form-group">
+              <a style="width: 100px" class="btn btn-filters ms-auto mt-4" (click)="searchTripReports()">
+                <img src="../../../../assets/img/icons/search-whites.svg" alt="img" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-responsive">
+      <table matSort matSortActive="Sno" matSortDirection="asc" matSortDisableClear class="table datanew">
+        <thead>
+        <tr>
+          <th mat-sort-header="DriverCode">Driver Code</th>
+          <th mat-sort-header="DriverName">Driver Name</th>
+          <th mat-sort-header="DriverPhone">Mobile Number</th>
+          <th mat-sort-header="RegisterDate">Register Date</th>
+          <th mat-sort-header="Rating">Rating</th>
+          <th mat-sort-header="VehicleName">Vehicle Name</th>
+          <th mat-sort-header="VehicleNumber">Vehicle Number</th>
+          <th mat-sort-header="VehicleType">Vehicle Type</th>
+          <th mat-sort-header="VehicleColor">Vehicle Color</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let driver of drivers">
+          <td>{{ driver.driverCode }}</td>
+          <td>{{ driver.driverName }}</td>
+          <td>{{ driver.driverPhone }}</td>
+          <td>{{ driver.registerDate | date: 'yyyy-MM-dd' }}</td>
+          <td>{{ driver.rating }}</td>
+          <td>{{ driver.vehicleName || 'N/A' }}</td>
+          <td>{{ driver.vehicleNumber || 'N/A' }}</td>
+          <td>{{ driver.vehicleType || 'N/A' }}</td>
+          <td>{{ driver.vehicleColor || 'N/A' }}</td>
+        </tr>
+        <tr *ngIf="drivers.length === 0">
+          <td colspan="9">
+            <h5 class="no-record">No matching records found</h5>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

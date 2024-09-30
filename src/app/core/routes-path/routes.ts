@@ -43,6 +43,9 @@ export class routes {
   public static get customer(): string {
     return this.core + '/customer';
   }
+  public static get customerPassengerHome(): string {
+    return this.customer + '/passenger-home-page';
+  }
 
   public static get passengerHomePage(): string {
     return this.base + '/passenger-home-page';
@@ -52,14 +55,10 @@ export class routes {
   }
 
 
-
-
   public static get users(): string {
     return this.core + '/user';
   }
-  public static get userList(): string {
-    return this.users + '/user-lists';
-  }
+
   public static get addUser(): string {
     return this.users + '/add-user';
   }
@@ -80,6 +79,9 @@ export class routes {
 
   public static get ripReport(): string {
     return this.report + '/trip-report';
+  }
+  public static get driverReport(): string {
+    return this.report + '/driver-report';
   }
 
 

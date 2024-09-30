@@ -46,4 +46,9 @@ export class TripService {
     return this.http.post<ApiResultFormatModel>(this.BASEURL + 'report/admin/trip', payload, { headers });
   }
 
+  public getDriverReport(payload: any): Observable<ApiResultFormatModel> {
+    const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
+    return this.http.post<ApiResultFormatModel>(this.BASEURL + 'report/admin/driver', payload, { headers });
+  }
+
 }

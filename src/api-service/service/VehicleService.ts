@@ -42,7 +42,7 @@ export class VehicleService {
 
   deleteVehicle(vehicleId: number) {
     const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
-    return this.http.delete(this.BASEURL+'auth/vehicle/deleteVehicle/'+vehicleId, { headers });
+    return this.http.delete(this.BASEURL+'vehicle/deleteVehicle/'+vehicleId, { headers });
   }
 
 

@@ -71,7 +71,13 @@ export class SidebarService {
           showSubRoute: false,
           icon: 'user',
           subMenus: [
-            //add other routes
+            {
+              menuValue: 'Passenger Home Page',
+              hasSubRoute: false,
+              showSubRoute: false,
+              route: routes.customerPassengerHome,
+              subRoutes: [],
+            },
           ],
         },
       ],
@@ -141,13 +147,6 @@ export class SidebarService {
               subRoutes: [],
             },
             {
-              menuValue: 'User List',
-              hasSubRoute: false,
-              showSubRoute: false,
-              route: routes.userList,
-              subRoutes: [],
-            },
-            {
               menuValue: 'Privilege',
               hasSubRoute: false,
               showSubRoute: false,
@@ -175,6 +174,13 @@ export class SidebarService {
               hasSubRoute: false,
               showSubRoute: false,
               route: routes.ripReport,
+              subRoutes: [],
+            },
+            {
+              menuValue: 'Driver Report',
+              hasSubRoute: false,
+              showSubRoute: false,
+              route: routes.driverReport,
               subRoutes: [],
             },
           ],

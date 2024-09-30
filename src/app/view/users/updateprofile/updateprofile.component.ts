@@ -16,7 +16,7 @@ export class UpdateprofileComponent {
   private sweetalert: SweetalertService;
   password='password'
   userDetail: any = null; // Store the submitted cart details
-
+  public isAdmin = false;
   form = new FormGroup({
     name: new FormControl('', [Validators.required]),
     username: new FormControl('', [Validators.required]),
@@ -43,6 +43,9 @@ export class UpdateprofileComponent {
 
   constructor(private userService:UserService) {
     this.findUserDetailByCode();
+    if (sessionStorage.getItem("role")=="ROLE_ADMIN"){
+      this.isAdmin = true;
+    }
   }
 
 
