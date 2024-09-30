@@ -5,6 +5,7 @@ import {TripService} from "../../../../api-service/service/TripService";
 import {ApiResultFormatModel} from "../../../../api-service/model/common/ApiResultFormatModel";
 import Swal from "sweetalert2";
 import {DriverService} from "../../../../api-service/service/DriverService";
+import {an} from "@fullcalendar/core/internal-common";
 
 @Component({
   selector: 'app-driver-home-page',
@@ -67,7 +68,8 @@ export class DriverHomePageComponent implements OnInit, OnDestroy {
 
     const loader = new Loader({
       // apiKey: 'AIzaSyCaKbVhcX_22R_pRKDYuNA7vox-PtGaDkI',
-      apiKey: 'AIzaSyCh4WBNFwhN5o3XuU4lLQ43sRLPGy0WSS0',
+      // apiKey: 'AIzaSyCh4WBNFwhN5o3XuU4lLQ43sRLPGy0WSS0',
+      apiKey: 'AIzaSyDWgUXPMSo8XVUj6DPbFzk20u_Z1K_SIL4',
       version: 'weekly',
       libraries: ['places']
     });
@@ -241,6 +243,33 @@ export class DriverHomePageComponent implements OnInit, OnDestroy {
   public cancelNotification(index: number) {
     console.log('Notification cancelled:', this.notifications[index]);
     // Handle cancel logic here
+    const notificaionData = this.notifications[index];
+    this.cancelRequest(notificaionData);
+
+  }
+
+  cancelRequest(notificaionData:any) {
+    const payload = {
+      passengerCode: notificaionData.passengerCode,
+      driveCode: sessionStorage.getItem("userId")
+    }
+    this.tripService.driverCancelTripRequest(payload).subscribe(value => {
+      if (value.statusCode == 200) {
+        Swal.fire({
+          title: 'Cancel Request',
+          text: 'Your request is Cancel',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+        window.location.reload();
+      } else {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Error!.',
+          icon: 'error',
+        });
+      }
+    });
   }
 
   public stopTrip() {
@@ -264,6 +293,7 @@ export class DriverHomePageComponent implements OnInit, OnDestroy {
           icon: 'success',
           confirmButtonText: 'OK'
         });
+        window.location.reload();
       }else {
         Swal.fire({
           title: 'Error',

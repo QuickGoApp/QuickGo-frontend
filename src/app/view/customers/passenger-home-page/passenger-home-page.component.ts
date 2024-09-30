@@ -135,7 +135,8 @@ export class PassengerHomePageComponent implements OnInit {
   private initializeGoogleMaps(): void {
     const loader = new Loader({
       // apiKey: 'AIzaSyCaKbVhcX_22R_pRKDYuNA7vox-PtGaDkI',
-      apiKey: 'AIzaSyCh4WBNFwhN5o3XuU4lLQ43sRLPGy0WSS0',
+      // apiKey: 'AIzaSyCh4WBNFwhN5o3XuU4lLQ43sRLPGy0WSS0',
+      apiKey: 'AIzaSyDWgUXPMSo8XVUj6DPbFzk20u_Z1K_SIL4',
       version: 'weekly',
       libraries: ['places']
     });
@@ -284,7 +285,7 @@ export class PassengerHomePageComponent implements OnInit {
 
     this.userLocationCircle = new google.maps.Circle({
       center: center,
-      radius: 2000, // 1 km radius
+      radius: 5000, // 5 km radius
       fillColor: '#fec343',
       fillOpacity: 0.35,
       strokeColor: '#FF0000',
@@ -515,6 +516,7 @@ export class PassengerHomePageComponent implements OnInit {
           confirmButtonText: 'OK'
         });
         this.submittedCart = false;
+        this.clearMap();
       } else {
         Swal.fire({
           title: 'Error!',
@@ -532,7 +534,7 @@ export class PassengerHomePageComponent implements OnInit {
       latitude: pickupLatLng.lat(),
       longitude: pickupLatLng.lng(),
       type: vehicleType,
-      radius:3 // Initial radius
+      radius:5 // Initial radius
     };
     console.log("first time passenger data :" + JSON.stringify(passenger))
 
