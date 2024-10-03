@@ -33,4 +33,9 @@ export class UserService {
 
   }
 
+  otpSend( body: any) {
+    const headers = new HttpHeaders().set('Authorization', 'Bearer ' + sessionStorage.getItem('token'));
+    return this.http.post<any>(this.BASEURL+'user/otpSend', body,{ headers });
+
+  }
 }
